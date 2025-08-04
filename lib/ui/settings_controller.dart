@@ -5,22 +5,22 @@ import 'package:neom_commons/utils/app_locale_utilities.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
+import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/data/implementations/app_hive_controller.dart';
 import 'package:neom_core/data/implementations/geolocator_controller.dart';
-import 'package:neom_core/data/implementations/user_controller.dart';
 import 'package:neom_core/domain/repository/analytics_repository.dart';
 import 'package:neom_core/domain/repository/job_repository.dart';
 import 'package:neom_core/domain/use_cases/login_service.dart';
+import 'package:neom_core/domain/use_cases/settings_service.dart';
+import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/app_locale.dart';
 
-import '../domain/use_cases/settings_service.dart';
-
 class SettingsController extends GetxController implements SettingsService {
   
-  final loginController = Get.find<LoginService>();
-  final userController = Get.find<UserController>();
+  final loginServiceImpl = Get.find<LoginService>();
+  final userServiceImpl = Get.find<UserService>();
   final analyticsRepositoryImpl = Get.find<AnalyticsRepository>();
   final jobsRepositoryImpl = Get.find<JobRepository>();
 
@@ -33,7 +33,7 @@ class SettingsController extends GetxController implements SettingsService {
   void onInit() async {
     super.onInit();
     AppConfig.logger.d("Settings Controller Init");
-    await userController.getProfiles();
+    await userServiceImpl.getProfiles();
     newLanguage.value = AppLocaleUtilities.languageFromLocale(Get.locale!);
     isLoading.value = false;
     locationPermission.value = await Geolocator.checkPermission();
@@ -72,7 +72,7 @@ class SettingsController extends GetxController implements SettingsService {
       } else {
         AppUtilities.showSnackBar(
           title: CommonTranslationConstants.underConstruction.tr,
-          message: CommonTranslationConstants.underConstructionMsg.tr,
+          message: MessageTranslationConstants.underConstructionMsg.tr,
         );
       }
     } catch (e) {

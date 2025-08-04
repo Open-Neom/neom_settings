@@ -39,7 +39,7 @@ class BlockedProfilesPage extends StatelessWidget {
             return mate.name.isNotEmpty ? GestureDetector(
               child: ListTile(
                 onTap: () {
-                  if(_.userController.profile.blockTo!.contains(mate.id)) {
+                  if(_.userServiceImpl.profile.blockTo!.contains(mate.id)) {
                     Alert(
                         context: context,
                         style: AlertStyle(

@@ -1,23 +1,22 @@
 name: neom_settings
 description: Settings for Open Neom.
 version: 1.0.0
-homepage: https://github.com/Cyberneom/neom_settings
+homepage: https://github.com/Open-Neom/neom_settings
 publish_to: 'none'
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=1.17.0"
-
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.19.0"
 dependencies:
   flutter:
     sdk: flutter
 
   neom_core:
     git:
-      url: git@github.com:Cyberneom/neom_core.git
+      url: git@github.com:Open-Neom/neom_core.git
   neom_commons:
     git:
-      url: git@github.com:Cyberneom/neom_commons.git
+      url: git@github.com:Open-Neom/neom_commons.git
 
 dev_dependencies:
   flutter_test:

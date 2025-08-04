@@ -14,9 +14,9 @@ import 'package:neom_commons/utils/constants/translations/app_translation_consta
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
-import 'package:neom_core/data/implementations/subscription_controller.dart';
-import 'package:neom_core/data/implementations/user_controller.dart';
 import 'package:neom_core/domain/model/app_user.dart';
+import 'package:neom_core/domain/use_cases/subscription_service.dart';
+import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -25,8 +25,8 @@ import '../utils/constants/setting_translation_constants.dart';
 
 class AccountSettingsController extends GetxController implements AccountSettingsService {
 
-  UserController userController = Get.find<UserController>();
-  SubscriptionController subscriptionController = Get.put(SubscriptionController());
+  UserService userServiceImpl = Get.find<UserService>();
+  SubscriptionService subscriptionServiceImpl = Get.find<SubscriptionService>();
   AppUser user = AppUser();
 
   RxBool isLoading = true.obs;
@@ -37,8 +37,8 @@ class AccountSettingsController extends GetxController implements AccountSetting
   @override
   void onInit() async {
     super.onInit();
-    AppConfig.logger.d("AccountSettings Controller Init for userId ${userController.user.id}");
-    user = userController.user;
+    AppConfig.logger.d("AccountSettings Controller Init for userId ${userServiceImpl.user.id}");
+    user = userServiceImpl.user;
     controllerPhone.text = user.phoneNumber;
   }
 
@@ -51,7 +51,7 @@ class AccountSettingsController extends GetxController implements AccountSetting
 
   @override
   void getSubscriptionAlert(BuildContext context) {
-    AppAlerts.getSubscriptionAlert(subscriptionController, context, AppRouteConstants.accountSettings);
+    AppAlerts.getSubscriptionAlert(subscriptionServiceImpl, context, AppRouteConstants.accountSettings);
   }
 
   @override
@@ -68,7 +68,7 @@ class AccountSettingsController extends GetxController implements AccountSetting
         validateMsg = MessageTranslationConstants.pleaseEnterCountryCode;
       } else if(user.phoneNumber == phoneNumberText && user.countryCode == phoneCountryCode) {
         validateMsg = MessageTranslationConstants.sameNumber.tr;
-      } else if(await userController.updatePhoneNumber(phoneNumberText, phoneCountryCode)) {
+      } else if(await userServiceImpl.updatePhoneNumber(phoneNumberText, phoneCountryCode)) {
         user.phoneNumber = phoneNumberText;
         user.countryCode = phoneCountryCode;
         AppUtilities.showSnackBar(title: AppTranslationConstants.updatePhone,

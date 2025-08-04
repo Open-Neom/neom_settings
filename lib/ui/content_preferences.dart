@@ -91,8 +91,8 @@ class ContentPreferencePage extends StatelessWidget {
               }
             ),
             TitleSubtitleRow(SettingTranslationConstants.blockedProfiles.tr,
-              onPressed: () => _.userController.profile.blockTo!.isNotEmpty
-                  ? Get.toNamed(AppRouteConstants.blockedProfiles, arguments: _.userController.profile.blockTo)
+              onPressed: () => _.userServiceImpl.profile.blockTo!.isNotEmpty
+                  ? Get.toNamed(AppRouteConstants.blockedProfiles, arguments: _.userServiceImpl.profile.blockTo)
                   : AppAlerts.showAlert(context, title: SettingTranslationConstants.blockedProfiles.tr,
                       message: SettingTranslationConstants.blockedProfilesMsg.tr),
             ),

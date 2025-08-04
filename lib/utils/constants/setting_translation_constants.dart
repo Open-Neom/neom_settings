@@ -1,4 +1,5 @@
 class SettingTranslationConstants {
+
   static const String language = 'language';
   static const String preferredLanguage = 'preferredLanguage';
   static const String safety = 'safety';
@@ -48,4 +49,5 @@ class SettingTranslationConstants {
   static const String activateSubscription = 'activateSubscription';
   static const String cancelSubscription = 'cancelSubscription';
   static const String cancelThisSubscription = 'cancelThisSubscription';
+
 }

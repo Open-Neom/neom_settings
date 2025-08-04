@@ -42,7 +42,7 @@ class AccountSettingsPage extends StatelessWidget {
           const Divider(height: 0),
           if((_.user.userRole != UserRole.subscriber || kDebugMode) && AppConfig.instance.appInUse != AppInUse.c) TitleSubtitleRow(
             AppTranslationConstants.subscription.tr,
-            subtitle: (_.userController.userSubscription?.status == SubscriptionStatus.active) ? AppTranslationConstants.active.tr.capitalize : _.userController.subscriptionLevel == SubscriptionLevel.freeMonth ? CommonTranslationConstants.testPeriod.tr : SettingTranslationConstants.activateSubscription.tr,
+            subtitle: (_.userServiceImpl.userSubscription?.status == SubscriptionStatus.active) ? AppTranslationConstants.active.tr.capitalize : _.userServiceImpl.subscriptionLevel == SubscriptionLevel.freeMonth ? CommonTranslationConstants.testPeriod.tr : SettingTranslationConstants.activateSubscription.tr,
             onPressed: () => _.user.subscriptionId.isEmpty ? _.getSubscriptionAlert(context) : (),
           ),
           TitleSubtitleRow(
@@ -55,7 +55,7 @@ class AccountSettingsPage extends StatelessWidget {
             subtitle: _.user.email,
           ),
           const Divider(height: 0),
-          if(_.userController.userSubscription?.status == SubscriptionStatus.active)
+          if(_.userServiceImpl.userSubscription?.status == SubscriptionStatus.active)
             TitleSubtitleRow(SettingTranslationConstants.cancelSubscription.tr,  textColor: AppColor.ceriseRed,
               onPressed: () {
                 showDialog(
@@ -71,7 +71,7 @@ class AccountSettingsPage extends StatelessWidget {
                               style: const TextStyle(color: Colors.red),
                             ),
                             onPressed: () {
-                              _.subscriptionController.cancelSubscription();
+                              _.subscriptionServiceImpl.cancelSubscription();
                             },
                           ),
                           SimpleDialogOption(
