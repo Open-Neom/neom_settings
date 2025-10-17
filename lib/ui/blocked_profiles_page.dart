@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
@@ -22,24 +23,24 @@ class BlockedProfilesPage extends StatelessWidget {
     return GetBuilder<MateController>(
       id: AppPageIdConstants.following,
       init: MateController(),
-      builder: (_) => Scaffold(
+      builder: (controller) => Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBarChild(title: SettingTranslationConstants.blockedProfiles.tr)
       ),
-      backgroundColor: AppColor.main50,
+      backgroundColor: AppFlavour.getBackgroundColor(),
       body: Container(
         decoration: AppTheme.appBoxDecoration,
-        child: _.mates.isEmpty ?
+        child: controller.mates.isEmpty ?
           const Center(child: CircularProgressIndicator())
             : ListView.builder(
-          itemCount: _.mates.length,
+          itemCount: controller.mates.length,
           itemBuilder: (context, index) {
-            AppProfile mate = _.mates.values.elementAt(index);
+            AppProfile mate = controller.mates.values.elementAt(index);
             return mate.name.isNotEmpty ? GestureDetector(
               child: ListTile(
                 onTap: () {
-                  if(_.userServiceImpl.profile.blockTo!.contains(mate.id)) {
+                  if(controller.userServiceImpl.profile.blockTo!.contains(mate.id)) {
                     Alert(
                         context: context,
                         style: AlertStyle(
@@ -67,7 +68,7 @@ class BlockedProfilesPage extends StatelessWidget {
                           DialogButton(
                             color: AppColor.bondiBlue75,
                             onPressed: () async {
-                              _.unblock(mate.id);
+                              controller.unblock(mate.id);
                             },
                             child: Text(AppTranslationConstants.toUnblock.tr,
                               style: const TextStyle(fontSize: 15),
@@ -76,7 +77,7 @@ class BlockedProfilesPage extends StatelessWidget {
                         ]
                     ).show();
                   } else {
-                    _.getMateDetails(mate);
+                    controller.getMateDetails(mate);
                   }
 
                 },

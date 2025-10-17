@@ -6,7 +6,7 @@ import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'ui/about_page.dart';
 import 'ui/account_settings_page.dart';
 import 'ui/blocked_profiles_page.dart';
-import 'ui/content_preferences.dart';
+import 'ui/content_preferences_page.dart';
 import 'ui/privacy_and_terms_page.dart';
 import 'ui/settings_and_privacy_page.dart';
 

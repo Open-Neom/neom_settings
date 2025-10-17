@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/ui/theme/app_color.dart';
+import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/app_circular_progress_indicator.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
@@ -30,17 +30,15 @@ class SettingsPrivacyPage extends StatelessWidget {
     return GetBuilder<SettingsController>(
       id: AppPageIdConstants.settingsPrivacy,
       init: SettingsController(),
-      builder: (_) => Scaffold(
+      builder: (controller) => Scaffold(
         appBar: AppBarChild(title: CommonTranslationConstants.settingsPrivacy.tr),
-        backgroundColor: AppColor.main50,
+        backgroundColor: AppFlavour.getBackgroundColor(),
         body: Obx(()=>Container(
           decoration: AppTheme.appBoxDecoration,
-          child: _.isLoading.value ? Container(
-              decoration: AppTheme.appBoxDecoration,
-              child: const AppCircularProgressIndicator()) :
+          child: controller.isLoading.value ? AppCircularProgressIndicator() :
           ListView(
           children: <Widget>[
-            HeaderWidget(_.userServiceImpl.user.name.capitalize),
+            HeaderWidget(controller.userServiceImpl.user.name.capitalize),
             TitleSubtitleRow(SettingTranslationConstants.account.tr, navigateTo: AppRouteConstants.settingsAccount),
             TitleSubtitleRow(SettingTranslationConstants.privacyAndPolicy.tr, navigateTo: AppRouteConstants.privacyAndTerms),
             TitleSubtitleRow(SettingTranslationConstants.contentPreferences.tr, navigateTo: AppRouteConstants.contentPreferences),
@@ -183,7 +181,7 @@ class SettingsPrivacyPage extends StatelessWidget {
               },
             ),
             //TODO
-            if(_.userServiceImpl.user.userRole != UserRole.subscriber)
+            if(controller.userServiceImpl.user.userRole != UserRole.subscriber)
             Column(
               children: [
                 HeaderWidget(SettingTranslationConstants.adminCenter.tr, secondHeader: true),
@@ -191,11 +189,11 @@ class SettingsPrivacyPage extends StatelessWidget {
                 TitleSubtitleRow(CommonTranslationConstants.createSponsor.tr, navigateTo: AppRouteConstants.createSponsor),
                 TitleSubtitleRow(CommonTranslationConstants.usersDirectory.tr, navigateTo: AppRouteConstants.directory, navigateArguments: const [true],),
                 TitleSubtitleRow(SettingTranslationConstants.seeAnalytics.tr, navigateTo: AppRouteConstants.analytics),
-                if(_.userServiceImpl.user.userRole == UserRole.superAdmin)
+                if(controller.userServiceImpl.user.userRole == UserRole.superAdmin)
                   Column(
                     children: [
-                      TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr, onPressed: _.runAnalyticJobs),
-                      TitleSubtitleRow(SettingTranslationConstants.runProfileJobs.tr, onPressed: _.runProfileJobs),
+                      TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr, onPressed: controller.runAnalyticJobs),
+                      TitleSubtitleRow(SettingTranslationConstants.runProfileJobs.tr, onPressed: controller.runProfileJobs),
                   ],),
               ],
             ),

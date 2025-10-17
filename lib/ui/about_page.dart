@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neom_commons/ui/theme/app_color.dart';
+import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
@@ -20,7 +20,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<SettingsController>(
       builder: (_) => Scaffold(
-        backgroundColor: AppColor.main50,
+        backgroundColor: AppFlavour.getBackgroundColor(),
         appBar: AppBarChild(title: CommonTranslationConstants.aboutApp.tr),
         body: Container(
           decoration: AppTheme.appBoxDecoration,

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
@@ -27,9 +28,9 @@ class AccountSettingsPage extends StatelessWidget {
     return GetBuilder<AccountSettingsController>(
       id: AppPageIdConstants.accountSettings,
       init: AccountSettingsController(),
-      builder: (_) => Scaffold(
+      builder: (controller) => Scaffold(
       appBar: AppBarChild(title: SettingTranslationConstants.accountSettings.tr),
-      backgroundColor: AppColor.main50,
+      backgroundColor: AppFlavour.getBackgroundColor(),
       body: Container(
         decoration: AppTheme.appBoxDecoration,
         child: ListView(
@@ -37,25 +38,25 @@ class AccountSettingsPage extends StatelessWidget {
           HeaderWidget(SettingTranslationConstants.loginAndSecurity.tr),
           TitleSubtitleRow(
             AppTranslationConstants.username.tr,
-            subtitle: _.user.name,
+            subtitle: controller.user.name,
           ),
           const Divider(height: 0),
-          if((_.user.userRole != UserRole.subscriber || kDebugMode) && AppConfig.instance.appInUse != AppInUse.c) TitleSubtitleRow(
+          if((controller.user.userRole != UserRole.subscriber || kDebugMode) && AppConfig.instance.appInUse != AppInUse.c) TitleSubtitleRow(
             AppTranslationConstants.subscription.tr,
-            subtitle: (_.userServiceImpl.userSubscription?.status == SubscriptionStatus.active) ? AppTranslationConstants.active.tr.capitalize : _.userServiceImpl.subscriptionLevel == SubscriptionLevel.freeMonth ? CommonTranslationConstants.testPeriod.tr : SettingTranslationConstants.activateSubscription.tr,
-            onPressed: () => _.user.subscriptionId.isEmpty ? _.getSubscriptionAlert(context) : (),
+            subtitle: (controller.userServiceImpl.userSubscription?.status == SubscriptionStatus.active) ? AppTranslationConstants.active.tr.capitalize : controller.userServiceImpl.subscriptionLevel == SubscriptionLevel.freeMonth ? CommonTranslationConstants.testPeriod.tr : SettingTranslationConstants.activateSubscription.tr,
+            onPressed: () => controller.user.subscriptionId.isEmpty ? controller.getSubscriptionAlert(context) : (),
           ),
           TitleSubtitleRow(
             AppTranslationConstants.phone.tr,
-            subtitle: _.user.phoneNumber.isEmpty ? AppTranslationConstants.notSpecified.tr : "+${_.user.countryCode} ${_.user.phoneNumber}",
-            onPressed: () => _.getUpdatePhoneAlert(context),
+            subtitle: controller.user.phoneNumber.isEmpty ? AppTranslationConstants.notSpecified.tr : "+${controller.user.countryCode} ${controller.user.phoneNumber}",
+            onPressed: () => controller.getUpdatePhoneAlert(context),
           ),
           TitleSubtitleRow(
             AppTranslationConstants.email.tr,
-            subtitle: _.user.email,
+            subtitle: controller.user.email,
           ),
           const Divider(height: 0),
-          if(_.userServiceImpl.userSubscription?.status == SubscriptionStatus.active)
+          if(controller.userServiceImpl.userSubscription?.status == SubscriptionStatus.active)
             TitleSubtitleRow(SettingTranslationConstants.cancelSubscription.tr,  textColor: AppColor.ceriseRed,
               onPressed: () {
                 showDialog(
@@ -71,7 +72,7 @@ class AccountSettingsPage extends StatelessWidget {
                               style: const TextStyle(color: Colors.red),
                             ),
                             onPressed: () {
-                              _.subscriptionServiceImpl.cancelSubscription();
+                              controller.subscriptionServiceImpl.cancelSubscription();
                             },
                           ),
                           SimpleDialogOption(
@@ -87,7 +88,7 @@ class AccountSettingsPage extends StatelessWidget {
                     });
                 },
             ),
-          if(_.user.profiles.length > 1)
+          if(controller.user.profiles.length > 1)
             TitleSubtitleRow(CommonTranslationConstants.removeProfile.tr,  textColor: AppColor.ceriseRed,
               onPressed: () {
                 showDialog(
