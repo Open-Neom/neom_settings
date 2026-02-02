@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
@@ -24,7 +24,7 @@ class ContentPreferencePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingsController>(
+    return SintBuilder<SettingsController>(
       init: SettingsController(),
       id: AppPageIdConstants.settingsPrivacy,
       builder: (controller) => Scaffold(
@@ -38,7 +38,7 @@ class ContentPreferencePage extends StatelessWidget {
             HeaderWidget(AppTranslationConstants.language.tr, secondHeader: true),
             TitleSubtitleRow(
                 SettingTranslationConstants.preferredLanguage.tr,
-                subtitle: AppLocaleUtilities.languageFromLocale(Get.locale!).tr,
+                subtitle: AppLocaleUtilities.languageFromLocale(Sint.locale!).tr,
                 onPressed: () => Alert(
                   context: context,
                   style: AlertStyle(
@@ -84,7 +84,7 @@ class ContentPreferencePage extends StatelessWidget {
             HeaderWidget(AppTranslationConstants.safety.tr, secondHeader: true),
             TitleSubtitleRow('${SettingTranslationConstants.locationUsage.tr}: ${controller.locationPermission.value.name.tr}',
               onPressed: () async {
-                //Get.toNamed(GigRouteConstants.INTRO_REQUIRED_PERMISSIONS);
+                //Sint.toNamed(GigRouteConstants.INTRO_REQUIRED_PERMISSIONS);
                 controller.locationPermission.value == LocationPermission.denied ?
                   await controller.verifyLocationPermission()
                   : AppAlerts.showAlert(context, title: SettingTranslationConstants.locationUsage.tr,
@@ -93,7 +93,7 @@ class ContentPreferencePage extends StatelessWidget {
             ),
             TitleSubtitleRow(SettingTranslationConstants.blockedProfiles.tr,
               onPressed: () => controller.userServiceImpl.profile.blockTo!.isNotEmpty
-                  ? Get.toNamed(AppRouteConstants.blockedProfiles, arguments: controller.userServiceImpl.profile.blockTo)
+                  ? Sint.toNamed(AppRouteConstants.blockedProfiles, arguments: controller.userServiceImpl.profile.blockTo)
                   : AppAlerts.showAlert(context, title: SettingTranslationConstants.blockedProfiles.tr,
                       message: SettingTranslationConstants.blockedProfilesMsg.tr),
             ),

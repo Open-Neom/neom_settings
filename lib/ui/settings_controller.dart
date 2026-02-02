@@ -1,6 +1,6 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/utils/app_locale_utilities.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
@@ -17,12 +17,12 @@ import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/app_locale.dart';
 
-class SettingsController extends GetxController implements SettingsService {
+class SettingsController extends SintController implements SettingsService {
   
-  final loginServiceImpl = Get.find<LoginService>();
-  final userServiceImpl = Get.find<UserService>();
-  final analyticsRepositoryImpl = Get.find<AnalyticsRepository>();
-  final jobsRepositoryImpl = Get.find<JobRepository>();
+  final loginServiceImpl = Sint.find<LoginService>();
+  final userServiceImpl = Sint.find<UserService>();
+  final analyticsRepositoryImpl = Sint.find<AnalyticsRepository>();
+  final jobsRepositoryImpl = Sint.find<JobRepository>();
 
   final RxBool isLoading = true.obs;
   final RxString newLanguage = "".obs;
@@ -34,7 +34,7 @@ class SettingsController extends GetxController implements SettingsService {
     super.onInit();
     AppConfig.logger.d("Settings Controller Init");
     await userServiceImpl.getProfiles();
-    newLanguage.value = AppLocaleUtilities.languageFromLocale(Get.locale!);
+    newLanguage.value = AppLocaleUtilities.languageFromLocale(Sint.locale!);
     isLoading.value = false;
     locationPermission.value = await Geolocator.checkPermission();
   }
@@ -51,7 +51,7 @@ class SettingsController extends GetxController implements SettingsService {
     AppConfig.logger.d("Setting new locale");
     appLocale.value = EnumToString.fromString(AppLocale.values, newLanguage.value)!;
     bool isAvailable = false;
-    Get.back();
+    Sint.back();
 
     switch(appLocale.value){
       case AppLocale.spanish:

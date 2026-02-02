@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
@@ -25,7 +25,7 @@ class AccountSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AccountSettingsController>(
+    return SintBuilder<AccountSettingsController>(
       id: AppPageIdConstants.accountSettings,
       init: AccountSettingsController(),
       builder: (controller) => Scaffold(
@@ -104,7 +104,7 @@ class AccountSettingsPage extends StatelessWidget {
                               style: const TextStyle(color: Colors.red),
                             ),
                             onPressed: () {
-                              Get.toNamed(AppRouteConstants.profileRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.profileRemove]);
+                              Sint.toNamed(AppRouteConstants.profileRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.profileRemove]);
                             },
                           ),
                           SimpleDialogOption(
@@ -137,7 +137,7 @@ class AccountSettingsPage extends StatelessWidget {
                           style: const TextStyle(color: Colors.red),
                         ),
                         onPressed: () {
-                          Get.toNamed(AppRouteConstants.accountRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.accountRemove]);
+                          Sint.toNamed(AppRouteConstants.accountRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.accountRemove]);
                           },
                       ),
                       SimpleDialogOption(

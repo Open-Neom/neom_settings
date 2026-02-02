@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
@@ -18,7 +18,7 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingsController>(
+    return SintBuilder<SettingsController>(
       builder: (_) => Scaffold(
         backgroundColor: AppFlavour.getBackgroundColor(),
         appBar: AppBarChild(title: CommonTranslationConstants.aboutApp.tr),

@@ -1,4 +1,4 @@
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 
 
 import 'package:neom_core/utils/constants/app_route_constants.dart';
@@ -12,29 +12,29 @@ import 'ui/settings_and_privacy_page.dart';
 
 class SettingRoutes {
 
-  static final List<GetPage<dynamic>> routes = [
-    GetPage(
+  static final List<SintPage<dynamic>> routes = [
+    SintPage(
       name: AppRouteConstants.settingsPrivacy,
       page: () => const SettingsPrivacyPage(),
       transition: Transition.leftToRight,
     ),
-    GetPage(
+    SintPage(
       name: AppRouteConstants.privacyAndTerms,
       page: () => const PrivacyAndTermsPage(),
     ),
-    GetPage(
+    SintPage(
       name: AppRouteConstants.settingsAccount,
       page: () => const AccountSettingsPage(),
     ),
-    GetPage(
+    SintPage(
       name: AppRouteConstants.contentPreferences,
       page: () => const ContentPreferencePage(),
     ),
-    GetPage(
+    SintPage(
       name: AppRouteConstants.about,
       page: () => const AboutPage(),
     ),
-    GetPage(
+    SintPage(
       name: AppRouteConstants.blockedProfiles,
       page: () => const BlockedProfilesPage(),
     ),

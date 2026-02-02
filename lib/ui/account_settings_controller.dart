@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:sint/sint.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -23,10 +23,10 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import '../domain/use_cases/account_settings_service.dart';
 import '../utils/constants/setting_translation_constants.dart';
 
-class AccountSettingsController extends GetxController implements AccountSettingsService {
+class AccountSettingsController extends SintController implements AccountSettingsService {
 
-  UserService userServiceImpl = Get.find<UserService>();
-  SubscriptionService subscriptionServiceImpl = Get.find<SubscriptionService>();
+  UserService userServiceImpl = Sint.find<UserService>();
+  SubscriptionService subscriptionServiceImpl = Sint.find<SubscriptionService>();
   AppUser user = AppUser();
 
   RxBool isLoading = true.obs;
