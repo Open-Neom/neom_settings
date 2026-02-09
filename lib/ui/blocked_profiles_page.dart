@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
@@ -12,6 +11,7 @@ import 'package:neom_commons/utils/constants/translations/common_translation_con
 import 'package:neom_core/data/implementations/mate_controller.dart';
 import 'package:neom_core/domain/model/app_profile.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:sint/sint.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 

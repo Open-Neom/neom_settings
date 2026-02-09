@@ -1,77 +1,216 @@
 # neom_settings
-Purpose & Overview
-neom_settings is a dedicated module within the Open Neom ecosystem responsible for managing all user-specific
-and application-wide settings, preferences, and legal information. It provides a centralized and intuitive interface
-for users to customize their experience, manage their account, control privacy, and access important legal and support resources.
 
-This module is designed with a strong emphasis on user autonomy and transparency, aligning with Open Neom's vision of empowering
-users in their digital well-being journey. It adheres to the Clean Architecture principles, ensuring that its functionalities
-are well-organized, testable, and maintainable, while seamlessly integrating with neom_core for core data and neom_commons for shared UI components.
+A comprehensive settings and preferences management module for Flutter applications, part of the Open Neom ecosystem.
 
-🌟 Features & Responsibilities
-neom_settings provides a comprehensive suite of functionalities to manage various aspects of the user's interaction with the application:
-•	User Account Management: Allows users to view and update their account details (e.g., phone number), manage subscriptions,
-    and handle account/profile removal requests.
-•	Privacy Controls: Offers options for managing privacy settings, including viewing and unblocking other profiles,
-    and controlling location usage permissions.
-•	Content Preferences: Enables users to customize their content experience, such as selecting the preferred application language.
-•	Legal & Information Access: Provides direct access to essential legal documents like Terms of Service, Privacy Policy, Cookie Use,
-    and Legal Notices, ensuring transparency. It also includes an "About" section with application version details and links
-    to developer resources (GitHub, LinkedIn).
-•	Support & Contact: Facilitates user support through various contact options (email, WhatsApp, Instagram),
-    fostering community engagement and assistance.
-•	Administrative Tools (Conditional): For users with appropriate roles (e.g., superAdmin), it provides access to administrative
-    functionalities such as creating coupons/sponsors, managing user directories, viewing analytics, and running specific background jobs.
-•	Internationalization (i18n): Manages the application's language settings, allowing users to switch between supported
-    locales and enhancing global accessibility.
-•	Location Permission Management: Integrates with device location services to verify and request necessary permissions,
-    crucial for location-aware features.
+## Current Version: 1.2.0
 
-Technical Highlights / Why it Matters (for developers)
-For developers, neom_settings is an excellent module to study for understanding:
-•	Modular UI Design: Demonstrates how to structure a complex settings section into multiple, navigable sub-pages 
-    (AccountSettingsPage, PrivacyAndTermsPage, ContentPreferencePage, AboutPage, BlockedProfilesPage).
-•   GetX State Management: Utilizes GetX for efficient state management (SettingsController, AccountSettingsController),
-    handling reactive variables (RxBool, RxString, Rx<AppLocale>) and updating specific parts of the UI.
-•	Service Layer Interaction: Shows how a UI-focused module interacts with various core services (LoginService, UserService,
-    AnalyticsRepository, JobRepository, SubscriptionController) through their defined interfaces, maintaining architectural separation.
-•	Dynamic UI Rendering: Implements conditional UI elements based on user roles (UserRole), application flavor (AppInUse),
-    and data availability (e.g., blocked profiles list), showcasing flexible UI adaptation.
-•	External Integrations: Provides examples of launching external URLs (email, WhatsApp, web links)
-    and handling platform-specific permissions (Geolocator).
-•	Localization Best Practices: Demonstrates how to integrate enum_to_string and Get.locale
-    for robust internationalization of text and UI elements.
+## Philosophy
 
-How it Supports the Open Neom Initiative
-neom_settings is vital to the Open Neom ecosystem and the broader Tecnozenism vision by:
-•	Empowering User Autonomy: It provides users with direct control over their data, preferences, and account,
-    aligning with the principles of decentralization and conscious engagement with technology.
-•	Ensuring Transparency: By making legal information and app details easily accessible,
-    it fosters trust and transparency within the community.
-•	Facilitating Global Adoption: Comprehensive language settings support Open Neom's goal of reaching
-    a global audience and democratizing access to its technologies.
-•	Supporting Community & Research: The contact options and administrative tools (for relevant roles) enable effective community
-    management and support research-related activities within the platform.
-•	Showcasing Clean Architecture: As a well-defined feature module, it exemplifies how a complex set of functionalities can be built
-    and maintained within Open Neom's modular and decoupled architectural framework.
+**User autonomy and transparency.** neom_settings empowers users with full control over their data, preferences, and account, aligning with the principles of decentralization and conscious engagement with technology.
 
-🚀 Usage
-This module provides a collection of pages and a controller that can be integrated into the main application's navigation flow,
-typically accessible from a main AppDrawer or a dedicated settings icon.
+## Features
 
-🛠️ Dependencies
-neom_settings relies on neom_core for core services, models, and routing constants,
-and on neom_commons for reusable UI components, themes, and utility functions.
+### Current Capabilities (v1.2.0)
 
-🤝 Contributing
-We welcome contributions to the neom_settings module! If you're passionate about user experience, privacy, or administrative tools,
-your contributions can directly enhance the platform's usability and governance.
+#### Account Management
+- **Profile Updates** - Phone number, subscription status
+- **Account Removal** - Request account/profile deletion
+- **Subscription Management** - View and manage subscriptions
+- **Blocked Profiles** - View and unblock users
 
-To understand the broader architectural context of Open Neom and how neom_settings fits into the overall
-vision of Tecnozenism, please refer to the main project's MANIFEST.md.
+#### Privacy Controls
+- **Location Permissions** - Manage location access
+- **Privacy Settings** - Control data visibility
+- **Terms & Policies** - Access legal documents
 
-For guidance on how to contribute to Open Neom and to understand the various levels of learning and engagement possible within the project,
-consult our comprehensive guide: Learning Flutter Through Open Neom: A Comprehensive Path.
+#### Content Preferences
+- **Language Selection** - Multi-language support (ES, EN, FR)
+- **Locale Management** - Persistent language settings
+- **Theme Preferences** - UI customization
 
-📄 License
-This project is licensed under the Apache License, Version 2.0, January 2004. See the LICENSE file for details.
+#### Admin Tools (v1.2.0)
+- **Vector Index Job** - Run AI-powered content indexing
+- **Analytics Jobs** - User location analytics
+- **Profile Jobs** - Batch profile processing
+- **Coupon Management** - Create promotional codes
+
+#### Support & Contact
+- **Email Support** - Direct email contact
+- **WhatsApp** - Instant messaging support
+- **Social Links** - Instagram, GitHub, LinkedIn
+
+## Installation
+
+```yaml
+dependencies:
+  neom_settings:
+    git:
+      url: git@github.com:Open-Neom/neom_settings.git
+```
+
+## Usage
+
+### Navigate to Settings
+
+```dart
+import 'package:neom_settings/setting_routes.dart';
+
+// Open main settings page
+Navigator.pushNamed(context, AppRouteConstants.settingsAndPrivacy);
+
+// Open specific settings section
+Navigator.pushNamed(context, AppRouteConstants.accountSettings);
+Navigator.pushNamed(context, AppRouteConstants.privacyAndTerms);
+Navigator.pushNamed(context, AppRouteConstants.contentPreferences);
+Navigator.pushNamed(context, AppRouteConstants.about);
+```
+
+### Vector Index Admin Job
+
+```dart
+// Run from SettingsController
+final settingsController = Sint.find<SettingsController>();
+await settingsController.runVectorIndexJob();
+
+// Progress is tracked via vectorIndexProgress observable
+Obx(() {
+  final progress = settingsController.vectorIndexProgress.value;
+  if (progress != null) {
+    return LinearProgressIndicator(value: progress.progress);
+  }
+  return SizedBox.shrink();
+})
+```
+
+---
+
+## ROADMAP 2026: Intelligent Settings Platform
+
+Our vision is to create a **personalized, AI-enhanced settings experience** that adapts to user behavior and preferences.
+
+### Q1 2026: Smart Preferences
+
+#### AI-Powered Personalization
+- [ ] **Usage Analysis** - Learn from user behavior
+- [ ] **Smart Defaults** - AI-suggested settings
+- [ ] **Preference Sync** - Cross-device settings sync
+- [ ] **Backup & Restore** - Cloud settings backup
+- [ ] **Import/Export** - Settings portability
+
+#### Enhanced Privacy
+- [ ] **Privacy Dashboard** - Visual data usage overview
+- [ ] **Data Download** - Export all user data (GDPR)
+- [ ] **Consent Management** - Granular permission controls
+- [ ] **Audit Log** - View account activity history
+
+### Q2 2026: Admin Enhancement
+
+#### Advanced Admin Tools
+- [ ] **Batch Operations** - Multi-user management
+- [ ] **Scheduled Jobs** - Cron-like job scheduling
+- [ ] **Job History** - View past job results
+- [ ] **Real-time Monitoring** - Live job dashboards
+- [ ] **Error Alerts** - Proactive issue detection
+
+#### Content Management
+- [ ] **Vector Index Dashboard** - Visual index management
+- [ ] **Content Moderation** - Flag and review content
+- [ ] **Analytics Dashboard** - User engagement metrics
+- [ ] **A/B Testing** - Settings experiments
+
+### Q3 2026: Accessibility & UX
+
+#### Accessibility Features
+- [ ] **Screen Reader** - Full VoiceOver/TalkBack support
+- [ ] **High Contrast** - Accessibility theme options
+- [ ] **Font Scaling** - Custom text sizing
+- [ ] **Motion Reduction** - Reduce animations option
+- [ ] **Keyboard Navigation** - Full keyboard support
+
+#### Enhanced UX
+- [ ] **Search Settings** - Find settings quickly
+- [ ] **Quick Actions** - Common settings shortcuts
+- [ ] **Settings Wizard** - Guided initial setup
+- [ ] **Contextual Help** - In-app setting explanations
+
+### Q4 2026: Integration & Automation
+
+#### Automation
+- [ ] **Settings Rules** - Conditional preferences
+- [ ] **Time-Based Settings** - Schedule preference changes
+- [ ] **Location-Based** - Settings based on location
+- [ ] **Profile Modes** - Work, Home, Travel presets
+
+#### Integrations
+- [ ] **Webhook Notifications** - External event triggers
+- [ ] **API Access** - Settings via REST API
+- [ ] **Third-Party Sync** - Connect external services
+
+---
+
+## Architecture
+
+```
+lib/
+├── domain/
+│   └── use_cases/
+│       └── account_settings_service.dart   # Service interface
+├── ui/
+│   ├── settings_controller.dart            # Main settings logic
+│   ├── account_settings_controller.dart    # Account-specific logic
+│   ├── settings_and_privacy_page.dart      # Main settings page
+│   ├── account_settings_page.dart          # Account settings
+│   ├── privacy_and_terms_page.dart         # Legal documents
+│   ├── content_preferences_page.dart       # Language & preferences
+│   ├── blocked_profiles_page.dart          # Blocked users
+│   └── about_page.dart                     # App info & credits
+├── utils/
+│   └── constants/
+│       └── setting_translation_constants.dart
+└── setting_routes.dart                     # Route definitions
+```
+
+## Key Components
+
+### SettingsController
+- Implements `SettingsService` interface
+- Language/locale management
+- Location permission handling
+- Admin job execution (analytics, profiles, vector index)
+- Vector index progress tracking
+
+### AccountSettingsController
+- Account update operations
+- Subscription management
+- Profile removal requests
+- Phone number verification
+
+### Admin Features
+- **runVectorIndexJob()** - AI content indexing via Gemini
+- **runAnalyticJobs()** - User location analytics
+- **runProfileJobs()** - Batch profile processing
+
+## Dependencies
+
+- `neom_core` - Core services, models, and repositories
+- `neom_commons` - Shared UI components and themes
+- `sint` - State management (GetX-based)
+- `geolocator` - Location permissions (via neom_core)
+- `enum_to_string` - Locale enum handling
+
+## Admin Job Requirements
+
+For vector index job:
+```dart
+// Requires VectorIndexAdminService registered in Sint
+// Typically registered by neom_corpus module
+Sint.lazyPut<VectorIndexAdminService>(() => VectorIndexAdminServiceImpl());
+```
+
+## License
+
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
+
+---
+
+**Open Neom** - Empowering user autonomy through transparent settings.

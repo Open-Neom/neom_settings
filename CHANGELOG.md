@@ -1,25 +1,81 @@
+### 1.2.0 - Vector Index Admin Job & Code Quality
+
+This release introduces admin tools for AI-powered content indexing and code quality improvements.
+
+**New Features:**
+
+**Vector Index Admin Job:**
+- `runVectorIndexJob()` method in SettingsController
+- Real-time progress tracking via `VectorIndexProgress`
+- Gemini API integration for AI embeddings
+- PDF content extraction for richer indexing
+- Batch processing with configurable size
+- Progress callback with UI updates
+
+**Admin Tools:**
+- Vector index job accessible for superAdmin users
+- Job status display with progress indicator
+- Success/error notifications
+- Cancel job capability
+
+**Code Quality:**
+- Updated to flutter_lints ^6.0.0
+- SDK constraint updated to >=3.8.0 <4.0.0
+- Import ordering fixes (directives_ordering)
+- Service interface improvements
+
+**Documentation:**
+- Comprehensive README.md with ROADMAP 2026
+- Architecture documentation
+- Admin job usage examples
+
+---
+
+### 1.1.0 - Enhanced Account Management
+
+**Features:**
+- Subscription management integration
+- Blocked profiles viewing and unblocking
+- Profile removal request flow
+- Phone number update functionality
+
+**Privacy & Terms:**
+- Terms of Service access
+- Privacy Policy display
+- Cookie Use information
+- Legal Notices section
+
+**Admin Features:**
+- Analytics job execution
+- Profile batch jobs
+- Coupon creation (superAdmin)
+- User directory access
+
+---
+
 ### 1.0.0 - Initial Release & Decoupling from neom_home
 
-This marks the **initial official release (v1.0.0)** of `neom_settings` as a standalone, independent module within the Open Neom ecosystem. Previously, its functionalities were integrated directly into `neom_home`. This decoupling is a key step in further enhancing Open Neom's modularity, testability, and adherence to Clean Architecture principles.
+This marks the initial official release of `neom_settings` as a standalone module.
 
-**Key Highlights of this Release:**
+**Module Decoupling:**
+- Fully separated from `neom_home`
+- Independent settings management
+- Clear responsibility boundaries
 
-* **Module Decoupling:**
-    * `neom_settings` has been fully separated from `neom_home`, allowing it to manage all settings-related UI and logic independently.
-    * This improves the clarity of responsibilities and reduces inter-module coupling.
+**Centralized Settings Management:**
+- Account Management (phone, subscription, removal)
+- Privacy Controls (blocked profiles, location)
+- Content Preferences (language selection)
+- Legal & Information access
+- Support and Contact options
+- Conditional Admin Tools
 
-* **Centralized Settings Management:**
-    * Provides a comprehensive and organized interface for all user and application settings, including:
-        * Account Management (e.g., phone number updates, subscription status, account/profile removal).
-        * Privacy Controls (e.g., blocked profiles, location permissions).
-        * Content Preferences (e.g., language selection).
-        * Access to Legal & Information (Terms of Service, Privacy Policy, About App).
-        * Support and Contact options.
-        * Conditional Admin Tools (for authorized users).
+**Architecture:**
+- `SettingsController` implementing `SettingsService`
+- `AccountSettingsController` for account operations
+- Multiple specialized settings pages
+- Translation constants for localization
 
-* **Enhanced Maintainability & Scalability:**
-    * As a dedicated module, `neom_settings` is now easier to maintain, test, and extend without impacting other core parts of the application.
-    * This aligns with the overall architectural vision of Open Neom, fostering a more collaborative and efficient development environment.
-
-* **Leverages Core Open Neom Modules:**
-    * Built upon `neom_core` for fundamental services and data models, and `neom_commons` for shared UI components, ensuring consistency and efficiency across the platform.
+**Dependencies:**
+- Built upon `neom_core` for services and models
+- Uses `neom_commons` for shared UI components

@@ -1,21 +1,28 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:sint/sint.dart';
 import 'package:neom_commons/utils/app_locale_utilities.dart';
 import 'package:neom_commons/utils/app_utilities.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
+import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
+import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/data/implementations/app_hive_controller.dart';
 import 'package:neom_core/data/implementations/geolocator_controller.dart';
+import 'package:neom_core/domain/model/vector_index/vector_index_job_result.dart';
+import 'package:neom_core/domain/model/vector_index/vector_index_progress.dart';
 import 'package:neom_core/domain/repository/analytics_repository.dart';
 import 'package:neom_core/domain/repository/job_repository.dart';
 import 'package:neom_core/domain/use_cases/login_service.dart';
 import 'package:neom_core/domain/use_cases/settings_service.dart';
 import 'package:neom_core/domain/use_cases/user_service.dart';
+import 'package:neom_core/domain/use_cases/vector_index_admin_service.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/app_locale.dart';
+import 'package:sint/sint.dart';
+
+import '../utils/constants/setting_translation_constants.dart';
 
 class SettingsController extends SintController implements SettingsService {
   
@@ -117,6 +124,62 @@ class SettingsController extends SintController implements SettingsService {
 
     isLoading.value = false;
     AppConfig.logger.d("Profile Job successfully ran.");
+    update([AppPageIdConstants.settingsPrivacy]);
+  }
+
+  /// Vector index job progress state
+  final Rx<VectorIndexProgress?> vectorIndexProgress = Rx<VectorIndexProgress?>(null);
+  final RxBool isVectorJobRunning = false.obs;
+
+  @override
+  Future<void> runVectorIndexJob() async {
+    if (isVectorJobRunning.value) return;
+
+    isVectorJobRunning.value = true;
+    update([AppPageIdConstants.settingsPrivacy]);
+
+    final geminiApiKey = AppProperties.getGeminiApiKey();
+    final adminService = Sint.find<VectorIndexAdminService>();
+
+    adminService.initialize(
+      geminiApiKey: geminiApiKey,
+      extractContent: geminiApiKey.isNotEmpty,
+    );
+
+    // Set up progress callback
+    adminService.onProgressUpdate = (VectorIndexProgress progress) {
+      vectorIndexProgress.value = progress;
+      update([AppPageIdConstants.settingsPrivacy]);
+    };
+
+    try {
+      AppConfig.logger.d("Starting Vector Index Job...");
+
+      VectorIndexJobResult result = await adminService.runIndexJob(
+        batchSize: 10,
+        forceReindex: false,
+      );
+
+      AppConfig.logger.d("Vector Index Job completed: $result");
+
+      // Show result
+      AppUtilities.showSnackBar(
+        title: result.success
+            ? SettingTranslationConstants.vectorIndexJobComplete.tr
+            : AppTranslationConstants.error.tr,
+        message: result.message,
+        duration: const Duration(seconds: 5),
+      );
+    } catch (e) {
+      AppConfig.logger.e("Vector Index Job failed: $e");
+      AppUtilities.showSnackBar(
+        title: AppTranslationConstants.error.tr,
+        message: e.toString(),
+      );
+    }
+
+    isVectorJobRunning.value = false;
+    vectorIndexProgress.value = null;
     update([AppPageIdConstants.settingsPrivacy]);
   }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
@@ -8,6 +7,7 @@ import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_properties.dart';
+import 'package:sint/sint.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 import 'settings_controller.dart';

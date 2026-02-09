@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/app_circular_progress_indicator.dart';
@@ -16,6 +15,7 @@ import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
+import 'package:sint/sint.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
@@ -194,6 +194,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                     children: [
                       TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr, onPressed: controller.runAnalyticJobs),
                       TitleSubtitleRow(SettingTranslationConstants.runProfileJobs.tr, onPressed: controller.runProfileJobs),
+                      _buildVectorIndexRow(context, controller),
                   ],),
               ],
             ),
@@ -202,5 +203,63 @@ class SettingsPrivacyPage extends StatelessWidget {
         ),
         ),),
     ),);
+  }
+
+  /// Builds the Vector Index row with progress indicator
+  Widget _buildVectorIndexRow(BuildContext context, SettingsController controller) {
+    return Obx(() {
+      final progress = controller.vectorIndexProgress.value;
+      final isRunning = controller.isVectorJobRunning.value;
+
+      if (isRunning && progress != null) {
+        // Show progress
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      SettingTranslationConstants.vectorIndexJobRunning.tr,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: progress.progress,
+                backgroundColor: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                progress.currentStatus,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${progress.processedItems}/${progress.totalItems} · Nuevos: ${progress.newIndexes} · Errores: ${progress.errorItems}',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              ),
+              const Divider(),
+            ],
+          ),
+        );
+      }
+
+      // Show normal button
+      return TitleSubtitleRow(
+        SettingTranslationConstants.runVectorIndexJob.tr,
+        onPressed: controller.runVectorIndexJob,
+      );
+    });
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sint/sint.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -19,6 +18,7 @@ import 'package:neom_core/domain/use_cases/subscription_service.dart';
 import 'package:neom_core/domain/use_cases/user_service.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:sint/sint.dart';
 
 import '../domain/use_cases/account_settings_service.dart';
 import '../utils/constants/setting_translation_constants.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sint/sint.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
@@ -16,6 +15,7 @@ import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/subscription_level.dart';
 import 'package:neom_core/utils/enums/subscription_status.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
+import 'package:sint/sint.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 import 'account_settings_controller.dart';

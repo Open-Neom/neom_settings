@@ -49,5 +49,10 @@ class SettingTranslationConstants {
   static const String activateSubscription = 'activateSubscription';
   static const String cancelSubscription = 'cancelSubscription';
   static const String cancelThisSubscription = 'cancelThisSubscription';
+  static const String changeThisSettingLater = 'changeThisSettingLater';
+  static const String noAvailablePreviewUrlMsg = 'noAvailablePreviewUrlMsg';
+  static const String runVectorIndexJob = 'runVectorIndexJob';
+  static const String vectorIndexJobRunning = 'vectorIndexJobRunning';
+  static const String vectorIndexJobComplete = 'vectorIndexJobComplete';
 
 }
