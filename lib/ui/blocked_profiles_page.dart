@@ -83,7 +83,7 @@ class BlockedProfilesPage extends StatelessWidget {
                 },
                 leading: Hero(
                   tag: mate.photoUrl,
-                  child: FutureBuilder<CachedNetworkImageProvider>(
+                  child: FutureBuilder<ImageProvider>(
                     future: AppUtilities.handleCachedImageProvider(mate.photoUrl),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
