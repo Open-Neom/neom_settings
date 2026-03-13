@@ -54,5 +54,12 @@ class SettingTranslationConstants {
   static const String runVectorIndexJob = 'runVectorIndexJob';
   static const String vectorIndexJobRunning = 'vectorIndexJobRunning';
   static const String vectorIndexJobComplete = 'vectorIndexJobComplete';
+  static const String choosePlan = 'choosePlan';
+  static const String currentPlan = 'currentPlan';
+  static const String monthlySubscription = 'monthlySubscription';
+  static const String selectPlan = 'selectPlan';
+  static const String perMonth = 'perMonth';
+  static const String includes = 'includes';
+  static const String recommended = 'recommended';
 
 }

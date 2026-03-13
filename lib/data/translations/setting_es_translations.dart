@@ -1,4 +1,4 @@
-import 'package:neom_settings/utils/constants/setting_translation_constants.dart';
+import '../../utils/constants/setting_translation_constants.dart';
 
 class SettingEsTranslations {
 
@@ -51,6 +51,13 @@ class SettingEsTranslations {
     SettingTranslationConstants.runVectorIndexJob: 'Actualizar índice vectorial',
     SettingTranslationConstants.vectorIndexJobRunning: 'Indexando libros...',
     SettingTranslationConstants.vectorIndexJobComplete: 'Indexación completada',
+    SettingTranslationConstants.choosePlan: 'Elige tu plan',
+    SettingTranslationConstants.currentPlan: 'Plan actual',
+    SettingTranslationConstants.monthlySubscription: 'Suscripción mensual',
+    SettingTranslationConstants.selectPlan: 'Seleccionar plan',
+    SettingTranslationConstants.perMonth: '/mes',
+    SettingTranslationConstants.includes: 'Incluye',
+    SettingTranslationConstants.recommended: 'Recomendado',
   };
 
 }

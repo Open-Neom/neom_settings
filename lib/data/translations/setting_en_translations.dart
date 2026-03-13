@@ -1,4 +1,4 @@
-import 'package:neom_settings/utils/constants/setting_translation_constants.dart';
+import '../../utils/constants/setting_translation_constants.dart';
 
 class SettingEnTranslations {
 
@@ -38,16 +38,26 @@ class SettingEnTranslations {
     SettingTranslationConstants.removeThisProfile: 'Delete this profile?',
     SettingTranslationConstants.runAnalyticsJobs: 'Update analytics (5 min)',
     SettingTranslationConstants.runProfileJobs: 'Update user links (10 min)',
-    SettingTranslationConstants.safety: '',
+    SettingTranslationConstants.safety: 'Safety',
     SettingTranslationConstants.seeAnalytics: 'View analytics',
     SettingTranslationConstants.settingPrivacyMsg: 'These settings affect all your Cyberneom accounts on this device and are designed to improve the quality of your Browse experience.',
     SettingTranslationConstants.termsOfService: 'Terms of Service',
-    SettingTranslationConstants.toUnblock: '',
+    SettingTranslationConstants.toUnblock: 'Unblock',
     SettingTranslationConstants.unblockProfileMsg: 'Once unblocked, this profile will be able to see your posts, invite you to events, or chat with you.',
     SettingTranslationConstants.whatsCommunity: 'WhatsApp Community',
     SettingTranslationConstants.whatsContact: 'WhatsApp Contact',
     SettingTranslationConstants.whatsRock: 'Rock WhatsApp Group',
     SettingTranslationConstants.whatsapp: 'Whatsapp',
+    SettingTranslationConstants.runVectorIndexJob: 'Update vector index',
+    SettingTranslationConstants.vectorIndexJobRunning: 'Indexing books...',
+    SettingTranslationConstants.vectorIndexJobComplete: 'Indexing complete',
+    SettingTranslationConstants.choosePlan: 'Choose your plan',
+    SettingTranslationConstants.currentPlan: 'Current plan',
+    SettingTranslationConstants.monthlySubscription: 'Monthly subscription',
+    SettingTranslationConstants.selectPlan: 'Select plan',
+    SettingTranslationConstants.perMonth: '/month',
+    SettingTranslationConstants.includes: 'Includes',
+    SettingTranslationConstants.recommended: 'Recommended',
   };
 
 }

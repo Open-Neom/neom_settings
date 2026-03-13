@@ -7,7 +7,7 @@ import 'package:neom_commons/utils/constants/translations/app_translation_consta
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
-import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/cloud_properties.dart';
 import 'package:neom_core/data/implementations/app_hive_controller.dart';
 import 'package:neom_core/data/implementations/geolocator_controller.dart';
 import 'package:neom_core/domain/model/vector_index/vector_index_job_result.dart';
@@ -138,7 +138,7 @@ class SettingsController extends SintController implements SettingsService {
     isVectorJobRunning.value = true;
     update([AppPageIdConstants.settingsPrivacy]);
 
-    final geminiApiKey = AppProperties.getGeminiApiKey();
+    final geminiApiKey = CloudProperties.getGeminiApiKey();
     final adminService = Sint.find<VectorIndexAdminService>();
 
     adminService.initialize(

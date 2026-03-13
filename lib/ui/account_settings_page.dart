@@ -6,6 +6,8 @@ import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
+import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
+import 'package:neom_commons/utils/auth_guard.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
@@ -31,7 +33,10 @@ class AccountSettingsPage extends StatelessWidget {
       builder: (controller) => Scaffold(
       appBar: AppBarChild(title: SettingTranslationConstants.accountSettings.tr),
       backgroundColor: AppFlavour.getBackgroundColor(),
-      body: Container(
+      body: WebContentWrapper(
+        maxWidth: 700,
+        padding: EdgeInsets.zero,
+        child: Container(
         decoration: AppTheme.appBoxDecoration,
         child: ListView(
         children: <Widget>[
@@ -44,12 +49,19 @@ class AccountSettingsPage extends StatelessWidget {
           if((controller.user.userRole != UserRole.subscriber || kDebugMode) && AppConfig.instance.appInUse != AppInUse.c) TitleSubtitleRow(
             AppTranslationConstants.subscription.tr,
             subtitle: (controller.userServiceImpl.userSubscription?.status == SubscriptionStatus.active) ? AppTranslationConstants.active.tr.capitalize : controller.userServiceImpl.subscriptionLevel == SubscriptionLevel.freeMonth ? CommonTranslationConstants.testPeriod.tr : SettingTranslationConstants.activateSubscription.tr,
-            onPressed: () => controller.user.subscriptionId.isEmpty ? controller.getSubscriptionAlert(context) : (),
+            onPressed: () {
+              if (controller.user.subscriptionId.isNotEmpty) return;
+              AuthGuard.protect(context, () {
+                Sint.toNamed(AppRouteConstants.subscriptionPlans);
+              }, redirectRoute: AppRouteConstants.subscriptionPlans);
+            },
           ),
           TitleSubtitleRow(
             AppTranslationConstants.phone.tr,
             subtitle: controller.user.phoneNumber.isEmpty ? AppTranslationConstants.notSpecified.tr : "+${controller.user.countryCode} ${controller.user.phoneNumber}",
-            onPressed: () => controller.getUpdatePhoneAlert(context),
+            onPressed: () => AuthGuard.protect(context, () {
+              controller.getUpdatePhoneAlert(context);
+            }),
           ),
           TitleSubtitleRow(
             AppTranslationConstants.email.tr,
@@ -63,7 +75,7 @@ class AccountSettingsPage extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return SimpleDialog(
-                        backgroundColor: AppColor.getMain(),
+                        backgroundColor: AppColor.scaffold,
                         title: Text(SettingTranslationConstants.cancelThisSubscription.tr,),
                         children: <Widget>[
                           SimpleDialogOption(
@@ -95,7 +107,7 @@ class AccountSettingsPage extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return SimpleDialog(
-                        backgroundColor: AppColor.main50,
+                        backgroundColor: AppColor.scaffold,
                         title: Text(SettingTranslationConstants.removeThisAccount.tr),
                         children: <Widget>[
                           SimpleDialogOption(
@@ -122,39 +134,40 @@ class AccountSettingsPage extends StatelessWidget {
 
               },
             ),
-          TitleSubtitleRow(SettingTranslationConstants.removeAccount.tr,  textColor: AppColor.ceriseRed,
-            onPressed: (){
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return SimpleDialog(
-                    backgroundColor: AppColor.getMain(),
-                    title: Text(SettingTranslationConstants.removeThisAccount.tr),
-                    children: <Widget>[
-                      SimpleDialogOption(
-                        child: Text(
-                          AppTranslationConstants.remove.tr,
-                          style: const TextStyle(color: Colors.red),
+          if(!AppConfig.instance.isGuestMode)
+            TitleSubtitleRow(SettingTranslationConstants.removeAccount.tr,  textColor: AppColor.ceriseRed,
+              onPressed: (){
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return SimpleDialog(
+                      backgroundColor: AppColor.scaffold,
+                      title: Text(SettingTranslationConstants.removeThisAccount.tr),
+                      children: <Widget>[
+                        SimpleDialogOption(
+                          child: Text(
+                            AppTranslationConstants.remove.tr,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          onPressed: () {
+                            Sint.toNamed(AppRouteConstants.accountRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.accountRemove]);
+                            },
                         ),
-                        onPressed: () {
-                          Sint.toNamed(AppRouteConstants.accountRemove, arguments: [AppRouteConstants.accountSettings, AppRouteConstants.accountRemove]);
-                          },
-                      ),
-                      SimpleDialogOption(
-                        child: Text(
-                          AppTranslationConstants.cancel.tr,
+                        SimpleDialogOption(
+                          child: Text(
+                            AppTranslationConstants.cancel.tr,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            },
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          },
-                      ),
-                    ],
-                  );
-                });
-            },),
+                      ],
+                    );
+                  });
+              },),
         ],),
       ),
       ),
-    );
+    ),);
   }
 }

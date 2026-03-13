@@ -6,6 +6,7 @@ import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
+import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/app_alerts.dart';
 import 'package:neom_commons/utils/app_locale_utilities.dart';
 import 'package:neom_commons/utils/constants/app_locale_constants.dart';
@@ -30,7 +31,10 @@ class ContentPreferencePage extends StatelessWidget {
       builder: (controller) => Scaffold(
         appBar: AppBarChild(title: SettingTranslationConstants.contentPreferences.tr),
         backgroundColor: AppFlavour.getBackgroundColor(),
-        body: Container(
+        body: WebContentWrapper(
+          maxWidth: 700,
+          padding: EdgeInsets.zero,
+          child: Container(
         decoration: AppTheme.appBoxDecoration,
         child: ListView(
           physics: const BouncingScrollPhysics(),
@@ -42,7 +46,7 @@ class ContentPreferencePage extends StatelessWidget {
                 onPressed: () => Alert(
                   context: context,
                   style: AlertStyle(
-                      backgroundColor: AppColor.main50,
+                      backgroundColor: AppColor.scaffold,
                       titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
                   ),
                   title: SettingTranslationConstants.chooseYourLanguage.tr,
@@ -61,7 +65,7 @@ class ContentPreferencePage extends StatelessWidget {
                         iconSize: 24,
                         elevation: 16,
                         style: const TextStyle(color: Colors.white),
-                        dropdownColor: AppColor.main75,
+                        dropdownColor: AppColor.surfaceElevated,
                         underline: Container(
                             height: 1,
                             color: Colors.grey
@@ -99,6 +103,7 @@ class ContentPreferencePage extends StatelessWidget {
             ),
             ],
           ),
+        ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
+import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_properties.dart';
@@ -22,7 +23,10 @@ class AboutPage extends StatelessWidget {
       builder: (_) => Scaffold(
         backgroundColor: AppFlavour.getBackgroundColor(),
         appBar: AppBarChild(title: CommonTranslationConstants.aboutApp.tr),
-        body: Container(
+        body: WebContentWrapper(
+          maxWidth: 700,
+          padding: EdgeInsets.zero,
+          child: Container(
           decoration: AppTheme.appBoxDecoration,
           child: ListView(
             physics: const BouncingScrollPhysics(),
@@ -63,6 +67,6 @@ class AboutPage extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),);
   }
 }

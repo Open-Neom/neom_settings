@@ -5,6 +5,7 @@ import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
+import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
@@ -23,7 +24,10 @@ class PrivacyAndTermsPage extends StatelessWidget {
       builder: (_) => Scaffold(
         backgroundColor: AppFlavour.getBackgroundColor(),
         appBar: AppBarChild(title: SettingTranslationConstants.privacyAndPolicy.tr),
-        body: Container(
+        body: WebContentWrapper(
+          maxWidth: 700,
+          padding: EdgeInsets.zero,
+          child: Container(
           decoration: AppTheme.appBoxDecoration,
           child: Column(
             children: <Widget>[
@@ -48,7 +52,7 @@ class PrivacyAndTermsPage extends StatelessWidget {
                           data: ThemeData(
                             brightness: Brightness.dark,
                             fontFamily: AppTheme.fontFamily,
-                            cardColor: AppColor.main50,
+                            cardColor: AppColor.surfaceCard,
                           ),
                           child: LicensePage(
                             applicationVersion: AppConfig.instance.appVersion,
@@ -61,7 +65,7 @@ class PrivacyAndTermsPage extends StatelessWidget {
               ),
             ],
           ),
-        ),
+        ),),
       ),
     );
   }

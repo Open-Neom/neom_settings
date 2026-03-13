@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neom_commons/app_flavour.dart';
@@ -6,6 +7,7 @@ import 'package:neom_commons/ui/widgets/app_circular_progress_indicator.dart';
 import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
+import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
@@ -20,6 +22,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 import 'settings_controller.dart';
+import 'web/settings_web_page.dart';
 
 class SettingsPrivacyPage extends StatelessWidget {
 
@@ -30,10 +33,15 @@ class SettingsPrivacyPage extends StatelessWidget {
     return SintBuilder<SettingsController>(
       id: AppPageIdConstants.settingsPrivacy,
       init: SettingsController(),
-      builder: (controller) => Scaffold(
+      builder: (controller) {
+        if (kIsWeb) return SettingsWebPage(controller: controller);
+        return Scaffold(
         appBar: AppBarChild(title: CommonTranslationConstants.settingsPrivacy.tr),
         backgroundColor: AppFlavour.getBackgroundColor(),
-        body: Obx(()=>Container(
+        body: WebContentWrapper(
+          maxWidth: 700,
+          padding: EdgeInsets.zero,
+          child: Obx(()=>Container(
           decoration: AppTheme.appBoxDecoration,
           child: controller.isLoading.value ? AppCircularProgressIndicator() :
           ListView(
@@ -136,42 +144,44 @@ class SettingsPrivacyPage extends StatelessWidget {
                           mainAxisAlignment:
                           MainAxisAlignment.spaceEvenly,
                           children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(FontAwesomeIcons.whatsapp,),
-                                  iconSize: 40,
-                                  tooltip: SettingTranslationConstants.whatsCommunity.tr,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    launchUrl(Uri.parse(AppProperties.getMainWhatsGroupUrl()),
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                                Text(
-                                  SettingTranslationConstants.whatsRock.tr,
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(FontAwesomeIcons.whatsapp,),
-                                  iconSize: 40,
-                                  tooltip: SettingTranslationConstants.whatsCommunity.tr,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    launchUrl(Uri.parse(AppProperties.getSecondaryWhatsGroupUrl()),
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                                Text(SettingTranslationConstants.whatsCommunity.tr,),
-                              ],
-                            ),
+                            if (AppProperties.getMainWhatsGroupUrl().isNotEmpty)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(FontAwesomeIcons.whatsapp,),
+                                    iconSize: 40,
+                                    tooltip: SettingTranslationConstants.whatsCommunity.tr,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      launchUrl(Uri.parse(AppProperties.getMainWhatsGroupUrl()),
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    },
+                                  ),
+                                  Text(
+                                    SettingTranslationConstants.whatsRock.tr,
+                                  ),
+                                ],
+                              ),
+                            if (AppProperties.getSecondaryWhatsGroupUrl().isNotEmpty)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(FontAwesomeIcons.whatsapp,),
+                                    iconSize: 40,
+                                    tooltip: SettingTranslationConstants.whatsCommunity.tr,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      launchUrl(Uri.parse(AppProperties.getSecondaryWhatsGroupUrl()),
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    },
+                                  ),
+                                  Text(SettingTranslationConstants.whatsCommunity.tr,),
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -202,7 +212,8 @@ class SettingsPrivacyPage extends StatelessWidget {
           ],
         ),
         ),),
-    ),);
+    ),);},
+    );
   }
 
   /// Builds the Vector Index row with progress indicator

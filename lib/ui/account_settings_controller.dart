@@ -92,7 +92,7 @@ class AccountSettingsController extends SintController implements AccountSetting
     return Alert(
         context: context,
         style: AlertStyle(
-            backgroundColor: AppColor.main50,
+            backgroundColor: AppColor.scaffold,
             titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             titleTextAlign: TextAlign.justify
         ),
@@ -143,7 +143,7 @@ class AccountSettingsController extends SintController implements AccountSetting
             alignLabelWithHint: true,
           ),
           pickerDialogStyle: PickerDialogStyle(
-              backgroundColor: AppColor.getMain(),
+              backgroundColor: AppColor.scaffold,
               searchFieldInputDecoration: InputDecoration(
                 labelText: CommonTranslationConstants.searchByCountryName.tr,
               )

@@ -7,6 +7,7 @@ import 'ui/blocked_profiles_page.dart';
 import 'ui/content_preferences_page.dart';
 import 'ui/privacy_and_terms_page.dart';
 import 'ui/settings_and_privacy_page.dart';
+import 'ui/subscription_plans_page.dart';
 
 class SettingRoutes {
 
@@ -23,6 +24,10 @@ class SettingRoutes {
     SintPage(
       name: AppRouteConstants.settingsAccount,
       page: () => const AccountSettingsPage(),
+    ),
+    SintPage(
+      name: AppRouteConstants.subscriptionPlans,
+      page: () => const SubscriptionPlansPage(),
     ),
     SintPage(
       name: AppRouteConstants.contentPreferences,
