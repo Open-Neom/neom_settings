@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
-import 'package:neom_commons/ui/widgets/appbar_child.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
@@ -17,7 +17,6 @@ import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/subscription_level.dart';
 import 'package:neom_core/utils/enums/subscription_status.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
-import 'package:sint/sint.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 import 'account_settings_controller.dart';
@@ -31,7 +30,7 @@ class AccountSettingsPage extends StatelessWidget {
       id: AppPageIdConstants.accountSettings,
       init: AccountSettingsController(),
       builder: (controller) => Scaffold(
-      appBar: AppBarChild(title: SettingTranslationConstants.accountSettings.tr),
+      appBar: SintAppBar(title: SettingTranslationConstants.accountSettings.tr),
       backgroundColor: AppFlavour.getBackgroundColor(),
       body: WebContentWrapper(
         maxWidth: 700,

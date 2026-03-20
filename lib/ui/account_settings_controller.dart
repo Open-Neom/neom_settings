@@ -13,6 +13,7 @@ import 'package:neom_commons/utils/constants/translations/app_translation_consta
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/message_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
+import 'package:neom_core/utils/neom_error_logger.dart';
 import 'package:neom_core/domain/model/app_user.dart';
 import 'package:neom_core/domain/use_cases/subscription_service.dart';
 import 'package:neom_core/domain/use_cases/user_service.dart';
@@ -80,8 +81,8 @@ class AccountSettingsController extends SintController implements AccountSetting
         AppUtilities.showSnackBar(title: AppTranslationConstants.updatePhone,
             message: validateMsg);
       }
-    } catch(e) {
-      AppConfig.logger.e(e.toString());
+    } catch(e, st) {
+      NeomErrorLogger.recordError(e, st, module: 'neom_settings', operation: 'updatePhone');
     }
     update([AppPageIdConstants.accountSettings]);
   }

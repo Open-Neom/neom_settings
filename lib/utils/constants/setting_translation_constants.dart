@@ -33,6 +33,10 @@ class SettingTranslationConstants {
   static const String changeThisInTheAppSettings = "changeThisInTheAppSettings";
   static const String locationUsage = "locationUsage";
   static const String seeAnalytics = 'seeAnalytics';
+  static const String errorMonitor = 'errorMonitor';
+  static const String errorLogSummaryTitle = 'ERROR LOGS';
+  static const String noErrorsDetected = 'Sin errores detectados';
+  static const String viewFullMonitor = 'Ver monitor completo →';
   static const String runAnalyticsJobs = 'runAnalyticsJobs';
   static const String runProfileJobs = 'runProfileJobs';
   static const String gmail = 'gmail';
@@ -54,6 +58,16 @@ class SettingTranslationConstants {
   static const String runVectorIndexJob = 'runVectorIndexJob';
   static const String vectorIndexJobRunning = 'vectorIndexJobRunning';
   static const String vectorIndexJobComplete = 'vectorIndexJobComplete';
+  static const String runSaiaDomainJob = 'runSaiaDomainJob';
+  static const String runSaiaUserContextsJob = 'runSaiaUserContextsJob';
+  static const String runSaiaFullPipeline = 'runSaiaFullPipeline';
+  static const String saiaJobRunning = 'saiaJobRunning';
+  static const String saiaJobComplete = 'saiaJobComplete';
+  static const String saiaPendingVectors = 'saiaPendingVectors';
+  static const String saiaSection = 'saiaSection';
+  static const String saiaContextsUpToDate = 'saiaContextsUpToDate';
+  static const String saiaForceUpdate = 'saiaForceUpdate';
+  static const String flowMonitor = 'flowMonitor';
   static const String choosePlan = 'choosePlan';
   static const String currentPlan = 'currentPlan';
   static const String monthlySubscription = 'monthlySubscription';
@@ -61,5 +75,15 @@ class SettingTranslationConstants {
   static const String perMonth = 'perMonth';
   static const String includes = 'includes';
   static const String recommended = 'recommended';
+  static const String facilitator = 'facilitator';
+  static const String promoter = 'promoter';
+  static const String generalProfileTitle = 'generalProfileTitle';
+  static const String generalProfileDesc = 'generalProfileDesc';
+  static const String artistProfileTitle = 'artistProfileTitle';
+  static const String artistProfileDesc = 'artistProfileDesc';
+  static const String facilitatorProfileTitle = 'facilitatorProfileTitle';
+  static const String facilitatorProfileDesc = 'facilitatorProfileDesc';
+  static const String promoterProfileTitle = 'promoterProfileTitle';
+  static const String promoterProfileDesc = 'promoterProfileDesc';
 
 }

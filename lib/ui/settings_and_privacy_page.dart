@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:neom_commons/ui/widgets/app_circular_progress_indicator.dart';
-import 'package:neom_commons/ui/widgets/appbar_child.dart';
+import 'package:sint/sint.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
@@ -17,12 +17,12 @@ import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
-import 'package:sint/sint.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/constants/setting_translation_constants.dart';
 import 'settings_controller.dart';
 import 'web/settings_web_page.dart';
+import 'widgets/error_log_summary_widget.dart';
 
 class SettingsPrivacyPage extends StatelessWidget {
 
@@ -36,7 +36,7 @@ class SettingsPrivacyPage extends StatelessWidget {
       builder: (controller) {
         if (kIsWeb) return SettingsWebPage(controller: controller);
         return Scaffold(
-        appBar: AppBarChild(title: CommonTranslationConstants.settingsPrivacy.tr),
+        appBar: SintAppBar(title: CommonTranslationConstants.settingsPrivacy.tr),
         backgroundColor: AppFlavour.getBackgroundColor(),
         body: WebContentWrapper(
           maxWidth: 700,
@@ -199,12 +199,17 @@ class SettingsPrivacyPage extends StatelessWidget {
                 TitleSubtitleRow(CommonTranslationConstants.createSponsor.tr, navigateTo: AppRouteConstants.createSponsor),
                 TitleSubtitleRow(CommonTranslationConstants.usersDirectory.tr, navigateTo: AppRouteConstants.directory, navigateArguments: const [true],),
                 TitleSubtitleRow(SettingTranslationConstants.seeAnalytics.tr, navigateTo: AppRouteConstants.analytics),
-                if(controller.userServiceImpl.user.userRole == UserRole.superAdmin)
+                TitleSubtitleRow(SettingTranslationConstants.errorMonitor.tr, navigateTo: AppRouteConstants.errorMonitor),
+                TitleSubtitleRow(SettingTranslationConstants.flowMonitor.tr, navigateTo: AppRouteConstants.flowMonitor),
+                ErrorLogSummaryWidget(controller: controller),
+                if(controller.userServiceImpl.user.userRole.value >= UserRole.admin.value)
                   Column(
                     children: [
                       TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr, onPressed: controller.runAnalyticJobs),
                       TitleSubtitleRow(SettingTranslationConstants.runProfileJobs.tr, onPressed: controller.runProfileJobs),
                       _buildVectorIndexRow(context, controller),
+                      if (controller.isSaiaAvailable)
+                        _buildSaiaJobsSection(controller),
                   ],),
               ],
             ),
@@ -272,5 +277,54 @@ class SettingsPrivacyPage extends StatelessWidget {
         onPressed: controller.runVectorIndexJob,
       );
     });
+  }
+
+  /// Builds the SAIA admin jobs section with progress
+  Widget _buildSaiaJobsSection(SettingsController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Text(
+            SettingTranslationConstants.saiaSection.tr,
+            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ),
+        // Progress
+        Obx(() {
+          final progress = controller.saiaJobProgress.value;
+          if (progress == null || !progress.isRunning) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LinearProgressIndicator(
+                  value: progress.progress,
+                  backgroundColor: Colors.white12,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${progress.currentStep} (${progress.processedItems}/${progress.totalItems})',
+                  style: const TextStyle(color: Colors.white54, fontSize: 11),
+                ),
+              ],
+            ),
+          );
+        }),
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaDomainJob.tr,
+            onPressed: controller.runSaiaDomainContextJob),
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaUserContextsJob.tr,
+            onPressed: controller.runSaiaUserContextsJob),
+        TitleSubtitleRow(SettingTranslationConstants.saiaForceUpdate.tr,
+            subtitle: SettingTranslationConstants.saiaContextsUpToDate.tr,
+            onPressed: () => controller.runSaiaUserContextsJob(forceRebuild: true)),
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaFullPipeline.tr,
+            onPressed: controller.runSaiaFullPipelineJob),
+      ],
+    );
   }
 }

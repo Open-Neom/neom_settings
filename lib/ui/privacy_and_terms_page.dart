@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
-import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
@@ -23,7 +22,7 @@ class PrivacyAndTermsPage extends StatelessWidget {
     return SintBuilder<SettingsController>(
       builder: (_) => Scaffold(
         backgroundColor: AppFlavour.getBackgroundColor(),
-        appBar: AppBarChild(title: SettingTranslationConstants.privacyAndPolicy.tr),
+        appBar: SintAppBar(title: SettingTranslationConstants.privacyAndPolicy.tr),
         body: WebContentWrapper(
           maxWidth: 700,
           padding: EdgeInsets.zero,

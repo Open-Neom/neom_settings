@@ -3,7 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
-import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
@@ -29,7 +28,7 @@ class ContentPreferencePage extends StatelessWidget {
       init: SettingsController(),
       id: AppPageIdConstants.settingsPrivacy,
       builder: (controller) => Scaffold(
-        appBar: AppBarChild(title: SettingTranslationConstants.contentPreferences.tr),
+        appBar: SintAppBar(title: SettingTranslationConstants.contentPreferences.tr),
         backgroundColor: AppFlavour.getBackgroundColor(),
         body: WebContentWrapper(
           maxWidth: 700,

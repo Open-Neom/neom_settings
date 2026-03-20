@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neom_commons/app_flavour.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
-import 'package:neom_commons/ui/widgets/appbar_child.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
@@ -22,7 +21,7 @@ class AboutPage extends StatelessWidget {
     return SintBuilder<SettingsController>(
       builder: (_) => Scaffold(
         backgroundColor: AppFlavour.getBackgroundColor(),
-        appBar: AppBarChild(title: CommonTranslationConstants.aboutApp.tr),
+        appBar: SintAppBar(title: CommonTranslationConstants.aboutApp.tr),
         body: WebContentWrapper(
           maxWidth: 700,
           padding: EdgeInsets.zero,

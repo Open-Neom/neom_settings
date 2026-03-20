@@ -9,16 +9,15 @@ import 'package:neom_commons/ui/widgets/web/web_theme_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_commons/utils/external_utilities.dart';
-import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
-import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
 import 'package:sint/sint.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/constants/setting_translation_constants.dart';
 import '../settings_controller.dart';
+import '../widgets/error_log_summary_widget.dart';
 import 'widgets/settings_web_nav.dart';
 import 'widgets/settings_web_section.dart';
 
@@ -207,11 +206,22 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                   navigateTo: AppRouteConstants.directory, navigateArguments: const [true]),
               TitleSubtitleRow(SettingTranslationConstants.seeAnalytics.tr,
                   navigateTo: AppRouteConstants.analytics),
-              if (widget.controller.userServiceImpl.user.userRole == UserRole.superAdmin) ...[
+              TitleSubtitleRow(SettingTranslationConstants.errorMonitor.tr,
+                  navigateTo: AppRouteConstants.errorMonitor),
+              TitleSubtitleRow(SettingTranslationConstants.flowMonitor.tr,
+                  navigateTo: AppRouteConstants.flowMonitor),
+              ErrorLogSummaryWidget(controller: widget.controller),
+              if (widget.controller.userServiceImpl.user.userRole.value >= UserRole.admin.value) ...[
                 TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr,
                     onPressed: widget.controller.runAnalyticJobs),
                 TitleSubtitleRow(SettingTranslationConstants.runProfileJobs.tr,
                     onPressed: widget.controller.runProfileJobs),
+                TitleSubtitleRow(SettingTranslationConstants.runVectorIndexJob.tr,
+                    onPressed: widget.controller.runVectorIndexJob),
+                if (widget.controller.isSaiaAvailable) ...[
+                  const SizedBox(height: 16),
+                  _buildSaiaSection(),
+                ],
               ],
             ],
           ),
@@ -219,6 +229,86 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
       default:
         return const SizedBox.shrink();
     }
+  }
+
+  Widget _buildSaiaSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            SettingTranslationConstants.saiaSection.tr,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        // Dashboard stats
+        Obx(() {
+          final dashboard = widget.controller.saiaDashboard.value;
+          if (dashboard == null) {
+            // Auto-load dashboard on first view
+            widget.controller.loadSaiaDashboard();
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Text('Cargando...', style: TextStyle(color: Colors.white38, fontSize: 12)),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text(
+              '${dashboard.totalUsers} usuarios · ${dashboard.totalReleases} releases · '
+              '${dashboard.pendingVectors} ${SettingTranslationConstants.saiaPendingVectors.tr} · '
+              'Dominio: ${dashboard.hasCachedDomain ? "en caché" : "sin caché"}',
+              style: const TextStyle(color: Colors.white54, fontSize: 12),
+            ),
+          );
+        }),
+        const SizedBox(height: 4),
+        // Progress indicator
+        Obx(() {
+          final progress = widget.controller.saiaJobProgress.value;
+          if (progress == null || !progress.isRunning) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LinearProgressIndicator(
+                  value: progress.progress,
+                  backgroundColor: Colors.white12,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${progress.currentStep} '
+                  '(${progress.processedItems}/${progress.totalItems})',
+                  style: const TextStyle(color: Colors.white54, fontSize: 11),
+                ),
+              ],
+            ),
+          );
+        }),
+        // Job buttons
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaDomainJob.tr,
+            onPressed: widget.controller.isSaiaJobRunning.value
+                ? null : widget.controller.runSaiaDomainContextJob),
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaUserContextsJob.tr,
+            onPressed: widget.controller.isSaiaJobRunning.value
+                ? null : widget.controller.runSaiaUserContextsJob),
+        TitleSubtitleRow(SettingTranslationConstants.saiaForceUpdate.tr,
+            subtitle: SettingTranslationConstants.saiaContextsUpToDate.tr,
+            onPressed: widget.controller.isSaiaJobRunning.value
+                ? null : () => widget.controller.runSaiaUserContextsJob(forceRebuild: true)),
+        TitleSubtitleRow(SettingTranslationConstants.runSaiaFullPipeline.tr,
+            onPressed: widget.controller.isSaiaJobRunning.value
+                ? null : widget.controller.runSaiaFullPipelineJob),
+      ],
+    );
   }
 
   Widget _buildContactRow(IconData icon, String label, VoidCallback onTap) {
