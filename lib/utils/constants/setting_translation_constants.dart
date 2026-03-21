@@ -19,6 +19,7 @@ class SettingTranslationConstants {
   static const String twitter = "Twitter";
   static const String blog = "Blog";
   static const String contentPreferences = "contentPreferences";
+  static const String preferences = "preferences";
   static const String privacyAndPolicy = 'privacyAndPolicy';
   static const String account = 'account';
   static const String settingPrivacyMsg = 'settingPrivacyMsg';
@@ -86,4 +87,34 @@ class SettingTranslationConstants {
   static const String promoterProfileTitle = 'promoterProfileTitle';
   static const String promoterProfileDesc = 'promoterProfileDesc';
 
+  // Billing / Facturación
+  static const String billing = 'settingBilling';
+  static const String currentPlanSection = 'settingCurrentPlan';
+  static const String paymentMethod = 'settingPaymentMethod';
+  static const String paymentHistory = 'settingPaymentHistory';
+  static const String adjustPlan = 'settingAdjustPlan';
+  static const String updatePayment = 'settingUpdatePayment';
+  static const String noPaymentHistory = 'settingNoPaymentHistory';
+  static const String billingDate = 'settingBillingDate';
+  static const String billingTotal = 'settingBillingTotal';
+  static const String billingStatus = 'settingBillingStatus';
+  static const String billingActions = 'settingBillingActions';
+  static const String billingView = 'settingBillingView';
+  static const String billingPaid = 'settingBillingPaid';
+  static const String billingFailed = 'settingBillingFailed';
+  static const String cancelPlan = 'settingCancelPlan';
+  static const String renewsOn = 'settingRenewsOn';
+  static const String cancellation = 'settingCancellation';
+  static const String noPaymentMethod = 'settingNoPaymentMethod';
+  static const String acquireSubscription = 'settingAcquireSubscription';
+
+  // Privacy enhancements
+  static const String dataAndPrivacy = 'settingDataAndPrivacy';
+  static const String downloadMyData = 'settingDownloadMyData';
+
+  // Plan Manager
+  static const String subscriptionPlansAdmin = 'subscriptionPlans';
+  static const String addPlan = 'addPlan';
+  static const String editPlan = 'editPlan';
+  static const String backfillIsLiveKey = 'backfillIsLive';
 }

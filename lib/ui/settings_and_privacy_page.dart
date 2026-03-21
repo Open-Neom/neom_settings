@@ -75,7 +75,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                   iconSize: 40,
                                   tooltip: SettingTranslationConstants.gmail.tr,
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Sint.back();
                                     final email = Uri.encodeFull(AppProperties.getEmail());
                                     final subject = Uri.encodeFull('Regarding Mobile App');
                                     final uri = Uri.parse(
@@ -97,7 +97,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                   iconSize: 40,
                                   tooltip: SettingTranslationConstants.whatsContact.tr,
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Sint.back();
                                     ExternalUtilities.launchWhatsappURL(AppProperties.getWhatsappBusinessNumber(), AppTranslationConstants.hello.tr);
                                   },
                                 ),
@@ -112,7 +112,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                   iconSize: 40,
                                   tooltip: AppTranslationConstants.instagram.tr,
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Sint.back();
                                     launchUrl(Uri.parse(AppProperties.getInstagram(),),
                                       mode: LaunchMode.externalApplication,
                                     );
@@ -153,7 +153,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                     iconSize: 40,
                                     tooltip: SettingTranslationConstants.whatsCommunity.tr,
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      Sint.back();
                                       launchUrl(Uri.parse(AppProperties.getMainWhatsGroupUrl()),
                                         mode: LaunchMode.externalApplication,
                                       );
@@ -173,7 +173,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                     iconSize: 40,
                                     tooltip: SettingTranslationConstants.whatsCommunity.tr,
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      Sint.back();
                                       launchUrl(Uri.parse(AppProperties.getSecondaryWhatsGroupUrl()),
                                         mode: LaunchMode.externalApplication,
                                       );

@@ -74,7 +74,7 @@ class AccountSettingsController extends SintController implements AccountSetting
         user.countryCode = phoneCountryCode;
         AppUtilities.showSnackBar(title: AppTranslationConstants.updatePhone,
             message:  MessageTranslationConstants.updatedPhoneMsg);
-        Navigator.pop(context);
+        Sint.back();
       }
 
       if(validateMsg.isNotEmpty) {

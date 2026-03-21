@@ -30,7 +30,9 @@ class SettingsWebSection extends StatelessWidget {
         ),
         Divider(height: 1, color: AppColor.borderSubtle),
         const SizedBox(height: 16),
-        content,
+        Expanded(
+          child: SingleChildScrollView(child: content),
+        ),
       ],
     );
   }

@@ -62,36 +62,16 @@ class SettingsController extends SintController implements SettingsService {
   void setNewLocale(){
     AppConfig.logger.d("Setting new locale");
     appLocale.value = EnumToString.fromString(AppLocale.values, newLanguage.value)!;
-    bool isAvailable = false;
-    Sint.back();
-
-    switch(appLocale.value){
-      case AppLocale.spanish:
-        isAvailable = true;
-        break;
-      case AppLocale.english:
-      case AppLocale.french:
-        if(AppConfig.instance.appInUse == AppInUse.g) isAvailable = true;
-        break;
-      case AppLocale.deutsch:
-        break;
-    }
 
     try {
-      if(isAvailable) {
-        AppHiveController().setLocale(appLocale.value);
-        AppHiveController().updateLocale(appLocale.value);
-      } else {
-        AppUtilities.showSnackBar(
-          title: CommonTranslationConstants.underConstruction.tr,
-          message: MessageTranslationConstants.underConstructionMsg.tr,
-        );
-      }
+      AppHiveController().setLocale(appLocale.value);
+      AppHiveController().updateLocale(appLocale.value);
     } catch (e) {
       AppConfig.logger.e(e.toString());
     }
 
     update([AppPageIdConstants.settingsPrivacy]);
+    Sint.back();
   }
 
   @override

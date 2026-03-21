@@ -91,7 +91,7 @@ class AccountSettingsPage extends StatelessWidget {
                               AppTranslationConstants.no.tr,
                             ),
                             onPressed: () {
-                              Navigator.pop(context);
+                              Sint.back();
                             },
                           ),
                         ],
@@ -123,7 +123,7 @@ class AccountSettingsPage extends StatelessWidget {
                               AppTranslationConstants.cancel.tr,
                             ),
                             onPressed: () {
-                              Navigator.pop(context);
+                              Sint.back();
                             },
                           ),
                         ],
@@ -157,7 +157,7 @@ class AccountSettingsPage extends StatelessWidget {
                             AppTranslationConstants.cancel.tr,
                           ),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Sint.back();
                             },
                         ),
                       ],
