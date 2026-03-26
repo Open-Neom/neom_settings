@@ -94,14 +94,6 @@ class _SubscriptionPlansBodyState extends State<_SubscriptionPlansBody>
           ),
           child: Column(
             children: [
-              Text(
-                SettingTranslationConstants.choosePlan.tr,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
               const SizedBox(height: 8),
               Text(
                 SettingTranslationConstants.monthlySubscription.tr,

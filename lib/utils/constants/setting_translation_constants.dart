@@ -107,6 +107,14 @@ class SettingTranslationConstants {
   static const String cancellation = 'settingCancellation';
   static const String noPaymentMethod = 'settingNoPaymentMethod';
   static const String acquireSubscription = 'settingAcquireSubscription';
+  static const String manageOnStripe = 'settingManageOnStripe';
+  static const String manageOnStripeDesc = 'settingManageOnStripeDesc';
+  static const String nextPayment = 'settingNextPayment';
+  static const String cancellationScheduled = 'settingCancellationScheduled';
+  static const String subscriptionCancelsOn = 'settingSubscriptionCancelsOn';
+  static const String accessUntilDate = 'settingAccessUntilDate';
+  static const String cancellationError = 'settingCancellationError';
+  static const String subscriptionActiveUntil = 'settingSubscriptionActiveUntil';
 
   // Privacy enhancements
   static const String dataAndPrivacy = 'settingDataAndPrivacy';

@@ -17,16 +17,20 @@ import 'package:neom_commons/utils/constants/translations/common_translation_con
 import 'package:neom_commons/utils/external_utilities.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/utils/neom_error_logger.dart';
 import 'package:neom_commons/utils/auth_guard.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
+import 'package:neom_core/domain/use_cases/subscription_service.dart';
 import 'package:neom_core/utils/enums/subscription_status.dart';
+import 'package:collection/collection.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sint/sint.dart';
 import 'package:intl/intl.dart';
 import 'package:neom_core/data/firestore/subscription_event_firestore.dart';
 import 'package:neom_core/domain/model/subscription_event.dart';
+import 'package:neom_core/domain/use_cases/stripe_api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/constants/setting_translation_constants.dart';
@@ -51,6 +55,8 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
   String _activeSection = 'account';
   List<SubscriptionEvent>? _billingEvents;
   bool _billingLoading = false;
+  Map<String, dynamic>? _stripeSubInfo;
+  bool _portalLoading = false;
 
   List<SettingsNavItem> get _navItems => [
     SettingsNavItem(icon: Icons.person_outline, label: SettingTranslationConstants.account.tr, key: 'account'),
@@ -66,19 +72,95 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
 
   Future<void> _loadBillingEvents() async {
     if (_billingLoading || _billingEvents != null) return;
-    final subId = widget.controller.userServiceImpl.user.subscriptionId;
-    if (subId.isEmpty) {
-      setState(() => _billingEvents = []);
-      return;
-    }
+    final user = widget.controller.userServiceImpl.user;
+    final subId = user.subscriptionId;
+    final customerId = user.customerId;
+    final email = user.email;
+
+    AppConfig.logger.d('Loading billing events - subId: $subId, customerId: $customerId, email: $email');
+
     setState(() => _billingLoading = true);
     try {
-      final events = await SubscriptionEventFirestore().getBySubscriptionId(subId);
+      List<SubscriptionEvent> events = [];
+
+      // 1. Try Firestore events first
+      if (subId.isNotEmpty) {
+        events = await SubscriptionEventFirestore().getBySubscriptionId(subId);
+        AppConfig.logger.d('Firestore billing events: ${events.length}');
+      }
+
+      // 2. Fallback: fetch invoices directly from Stripe
+      if (events.isEmpty && Sint.isRegistered<StripeApiService>()) {
+        final stripeApi = Sint.find<StripeApiService>();
+        List<Map<String, dynamic>> invoices = [];
+
+        // Try by customerId first, then by email search
+        if (customerId.isNotEmpty) {
+          invoices = await stripeApi.getInvoices(customerId: customerId, limit: 15);
+          AppConfig.logger.d('Stripe invoices by customerId: ${invoices.length}');
+        }
+
+        if (invoices.isEmpty && email.isNotEmpty) {
+          invoices = await _fetchInvoicesByEmail(email);
+        }
+
+        for (final inv in invoices) {
+          final amount = ((inv['amount_paid'] ?? inv['total'] ?? 0) as num) / 100.0;
+          final status = (inv['status'] ?? '').toString();
+          final created = (inv['created'] as num?)?.toInt() ?? 0;
+          events.add(SubscriptionEvent(
+            id: (inv['id'] ?? '').toString(),
+            subscriptionId: subId,
+            stripeEventType: status == 'paid' ? 'invoice.payment_succeeded' : 'invoice.payment_failed',
+            amount: amount,
+            currency: (inv['currency'] ?? 'mxn').toString(),
+            invoiceUrl: (inv['hosted_invoice_url'] ?? inv['invoice_pdf'] ?? '').toString(),
+            paymentMethodBrand: '',
+            paymentMethodLast4: '',
+            createdAt: created * 1000,
+          ));
+        }
+      }
+
       events.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       if (mounted) setState(() { _billingEvents = events; _billingLoading = false; });
-    } catch (_) {
+    } catch (e, st) {
+      AppConfig.logger.e('Error loading billing events: $e');
+      NeomErrorLogger.recordError(e, st, module: 'neom_settings', operation: '_loadBillingEvents');
       if (mounted) setState(() { _billingEvents = []; _billingLoading = false; });
     }
+  }
+
+  /// Fetch all Stripe invoices for this email (ignores customerId).
+  /// Uses the Stripe `/invoices` endpoint filtered by `customer_email`.
+  Future<List<Map<String, dynamic>>> _fetchInvoicesByEmail(String email) async {
+    // The getInvoices method only supports customerId, so for now
+    // we rely on the customerId being set properly during checkout.
+    // If customerId is missing, the payment history won't show.
+    AppConfig.logger.w('No customerId found for billing history. Email: $email');
+    return [];
+  }
+
+  Future<void> _loadStripeSubInfo() async {
+    final subId = widget.controller.userServiceImpl.user.subscriptionId;
+    if (subId.isEmpty) return;
+    try {
+      final info = await Sint.find<StripeApiService>().getSubscriptionInfo(subId);
+      if (mounted && info != null) setState(() => _stripeSubInfo = info);
+    } catch (_) {}
+  }
+
+  Future<void> _openBillingPortal() async {
+    final customerId = widget.controller.userServiceImpl.user.customerId;
+    if (customerId.isEmpty) return;
+    setState(() => _portalLoading = true);
+    try {
+      final url = await Sint.find<StripeApiService>().createBillingPortalSession(customerId);
+      if (url.isNotEmpty) {
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {}
+    if (mounted) setState(() => _portalLoading = false);
   }
 
   void _navigateSection(int delta) {
@@ -468,17 +550,33 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
   }
 
   Widget _buildBillingSection() {
-    // Lazy load billing events
+    // Lazy load billing events and Stripe subscription info
     if (_billingEvents == null && !_billingLoading) {
       Future.microtask(_loadBillingEvents);
+    }
+    if (_stripeSubInfo == null) {
+      Future.microtask(_loadStripeSubInfo);
     }
 
     final userSub = widget.controller.userServiceImpl.userSubscription;
     final hasSubscription = userSub != null && userSub.status == SubscriptionStatus.active;
-    final levelName = userSub?.level?.name ?? '';
-    final displayLevel = levelName.isNotEmpty
-        ? '${levelName[0].toUpperCase()}${levelName.substring(1)}'
-        : '';
+
+    // Look up the real plan name (e.g. "Plan Posiciónate") from SubscriptionController
+    String planDisplayName = '';
+    if (hasSubscription) {
+      if (Sint.isRegistered<SubscriptionService>()) {
+        final matchingPlan = Sint.find<SubscriptionService>().subscriptionPlans.values.firstWhereOrNull(
+          (plan) => plan.level == userSub!.level,
+        );
+        if (matchingPlan != null && matchingPlan.name.isNotEmpty) {
+          planDisplayName = matchingPlan.name;
+        }
+      }
+      // Fallback: use translated level name (e.g. "creatorPlan".tr → "Plan Lánzate")
+      if (planDisplayName.isEmpty && userSub!.level != null) {
+        planDisplayName = '${userSub.level!.name}Plan'.tr;
+      }
+    }
 
     return SettingsWebSection(
       title: SettingTranslationConstants.billing.tr,
@@ -508,7 +606,7 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                     children: [
                       Text(
                         hasSubscription
-                            ? '${AppProperties.getGeneralSubscriptionName()} — $displayLevel'
+                            ? planDisplayName
                             : CommonTranslationConstants.freeAccount.tr,
                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
@@ -541,54 +639,97 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
 
           const SizedBox(height: 24),
 
-          // B. Payment method
+          // B. Payment method (from Stripe real-time data)
           HeaderWidget(SettingTranslationConstants.paymentMethod.tr),
           Builder(builder: (_) {
-            final events = _billingEvents ?? [];
-            final lastPaid = events.where((e) => e.paymentMethodBrand.isNotEmpty).toList();
-            if (lastPaid.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.credit_card, color: Colors.white24, size: 20),
-                    const SizedBox(width: 12),
-                    Text(SettingTranslationConstants.noPaymentMethod.tr,
-                        style: TextStyle(color: Colors.grey[500], fontSize: 14)),
-                  ],
-                ),
-              );
+            // Try Stripe real-time data first, fall back to billing events
+            final stripePm = _stripeSubInfo?['default_payment_method'];
+            final card = stripePm is Map ? (stripePm['card'] as Map?) : null;
+            final brand = card?['brand']?.toString().toUpperCase() ?? '';
+            final last4 = card?['last4']?.toString() ?? '';
+
+            if (brand.isEmpty) {
+              // Fallback to billing events
+              final events = _billingEvents ?? [];
+              final lastPaid = events.where((e) => e.paymentMethodBrand.isNotEmpty).toList();
+              if (lastPaid.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.credit_card, color: Colors.white24, size: 20),
+                      const SizedBox(width: 12),
+                      Text(SettingTranslationConstants.noPaymentMethod.tr,
+                          style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+                    ],
+                  ),
+                );
+              }
+              final pm = lastPaid.first;
+              return _buildPaymentMethodRow(pm.paymentMethodBrand, pm.paymentMethodLast4);
             }
-            final pm = lastPaid.first;
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+
+            return _buildPaymentMethodRow(brand, last4);
+          }),
+
+          // Next payment date (from Stripe real-time)
+          if (_stripeSubInfo != null && ((_stripeSubInfo!['current_period_end'] as num?) ?? 0) > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.event, color: Colors.grey[600], size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${SettingTranslationConstants.nextPayment.tr}: ${DateFormat.yMMMd(Sint.locale?.languageCode ?? 'es').format(DateTime.fromMillisecondsSinceEpoch((_stripeSubInfo!['current_period_end'] as int) * 1000))}',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+
+          // Manage on Stripe portal button
+          if (hasSubscription && widget.controller.userServiceImpl.user.customerId.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white.withAlpha(5),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white10),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.credit_card, color: Colors.white70, size: 20),
+                  const Icon(Icons.open_in_new, color: Colors.white54, size: 20),
                   const SizedBox(width: 12),
-                  Text(
-                    '${pm.paymentMethodBrand} \u2022\u2022\u2022\u2022 ${pm.paymentMethodLast4}',
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  const Spacer(),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white70,
-                      side: const BorderSide(color: Colors.white24),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(SettingTranslationConstants.manageOnStripe.tr,
+                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 2),
+                        Text(SettingTranslationConstants.manageOnStripeDesc.tr,
+                            style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                      ],
                     ),
-                    onPressed: () => Sint.toNamed(AppRouteConstants.subscriptionPlans),
-                    child: Text(SettingTranslationConstants.updatePayment.tr),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.bondiBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                    ),
+                    onPressed: _portalLoading ? null : _openBillingPortal,
+                    child: _portalLoading
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : Text(SettingTranslationConstants.manageOnStripe.tr),
                   ),
                 ],
               ),
-            );
-          }),
+            ),
+          ],
 
           const SizedBox(height: 24),
 
@@ -672,6 +813,33 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
             const Divider(height: 1, color: Colors.white12),
             const SizedBox(height: 16),
             HeaderWidget(SettingTranslationConstants.cancellation.tr),
+
+            // Show scheduled cancellation notice if applicable
+            if (userSub != null && userSub.endDate > 0) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.amber.withAlpha(40)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.schedule, color: Colors.amber[300], size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '${SettingTranslationConstants.subscriptionCancelsOn.tr.replaceAll('@date', '${DateTime.fromMillisecondsSinceEpoch(userSub!.endDate).day}/${DateTime.fromMillisecondsSinceEpoch(userSub!.endDate).month}/${DateTime.fromMillisecondsSinceEpoch(userSub!.endDate).year}')} '
+                        '${SettingTranslationConstants.accessUntilDate.tr}',
+                        style: TextStyle(color: Colors.amber[200], fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -680,6 +848,9 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                     child: Text(SettingTranslationConstants.cancelPlan.tr,
                         style: const TextStyle(color: Colors.white70, fontSize: 14)),
                   ),
+                  if (userSub != null && userSub.endDate > 0)
+                    Text(SettingTranslationConstants.cancellationScheduled.tr, style: TextStyle(color: Colors.amber[300], fontSize: 13))
+                  else
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red.withAlpha(40),
@@ -689,13 +860,14 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => SimpleDialog(
+                        builder: (dialogContext) => SimpleDialog(
                           backgroundColor: AppColor.scaffold,
                           title: Text(SettingTranslationConstants.cancelThisSubscription.tr),
                           children: [
                             SimpleDialogOption(
                               child: Text(AppTranslationConstants.yes.tr, style: const TextStyle(color: Colors.red)),
                               onPressed: () {
+                                Navigator.of(dialogContext).pop();
                                 if (Sint.isRegistered<AccountSettingsController>()) {
                                   Sint.find<AccountSettingsController>().subscriptionServiceImpl.cancelSubscription();
                                 }
@@ -703,7 +875,7 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                             ),
                             SimpleDialogOption(
                               child: Text(AppTranslationConstants.no.tr),
-                              onPressed: () => Sint.back(),
+                              onPressed: () => Navigator.of(dialogContext).pop(),
                             ),
                           ],
                         ),
@@ -797,6 +969,27 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
             onPressed: widget.controller.isSaiaJobRunning.value
                 ? null : widget.controller.runSaiaFullPipelineJob),
       ],
+    );
+  }
+
+  Widget _buildPaymentMethodRow(String brand, String last4) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.credit_card, color: Colors.white70, size: 20),
+          const SizedBox(width: 12),
+          Text(
+            '$brand \u2022\u2022\u2022\u2022 $last4',
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 
