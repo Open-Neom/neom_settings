@@ -48,6 +48,7 @@ class SettingsPrivacyPage extends StatelessWidget {
           children: <Widget>[
             HeaderWidget(controller.userServiceImpl.user.name.capitalize),
             TitleSubtitleRow(SettingTranslationConstants.account.tr, navigateTo: AppRouteConstants.settingsAccount),
+            TitleSubtitleRow(SettingTranslationConstants.billing.tr, navigateTo: AppRouteConstants.billing),
             TitleSubtitleRow(SettingTranslationConstants.privacyAndPolicy.tr, navigateTo: AppRouteConstants.privacyAndTerms),
             TitleSubtitleRow(SettingTranslationConstants.contentPreferences.tr, navigateTo: AppRouteConstants.contentPreferences),
             HeaderWidget(AppTranslationConstants.general.tr.capitalize, secondHeader: true,),

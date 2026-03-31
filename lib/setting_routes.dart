@@ -3,6 +3,7 @@ import 'package:sint/sint.dart';
 
 import 'ui/about_page.dart';
 import 'ui/account_settings_page.dart';
+import 'ui/billing_page.dart';
 import 'ui/blocked_profiles_page.dart';
 import 'ui/content_preferences_page.dart';
 import 'ui/privacy_and_terms_page.dart';
@@ -24,6 +25,10 @@ class SettingRoutes {
     SintPage(
       name: AppRouteConstants.settingsAccount,
       page: () => const AccountSettingsPage(),
+    ),
+    SintPage(
+      name: AppRouteConstants.billing,
+      page: () => const BillingPage(),
     ),
     SintPage(
       name: AppRouteConstants.subscriptionPlans,
