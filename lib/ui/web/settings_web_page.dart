@@ -606,7 +606,7 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                     children: [
                       Text(
                         hasSubscription
-                            ? planDisplayName
+                            ? planDisplayName.tr
                             : CommonTranslationConstants.freeAccount.tr,
                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
