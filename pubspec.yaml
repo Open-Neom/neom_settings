@@ -17,6 +17,9 @@ dependencies:
   neom_commons:
     git:
       url: git@github.com:Open-Neom/neom_commons.git
+  saia_core:
+    git:
+      url: git@github.com:Open-Neom/saia_core.git
 
 dev_dependencies:
   flutter_test:

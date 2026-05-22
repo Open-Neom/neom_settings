@@ -17,6 +17,7 @@ import 'package:neom_commons/utils/constants/translations/common_translation_con
 import 'package:neom_commons/utils/external_utilities.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/utils/app_gates.dart';
 import 'package:neom_core/utils/neom_error_logger.dart';
 import 'package:neom_commons/utils/auth_guard.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
@@ -528,6 +529,14 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                   navigateTo: AppRouteConstants.errorMonitor),
               TitleSubtitleRow(SettingTranslationConstants.flowMonitor.tr,
                   navigateTo: AppRouteConstants.flowMonitor),
+              // Saia IA Bench — admin-only dogfooding entry. Gate:
+              // AppGates.canUseSaiaBench() (admin only until UX is ready).
+              if (AppGates.canUseSaiaBench())
+                TitleSubtitleRow(
+                  'IA Bench',
+                  subtitle: 'Benchmarks MMLU · HellaSwag · ARC · GSM8K · Saia ES',
+                  navigateTo: AppRouteConstants.saiaBench,
+                ),
               ErrorLogSummaryWidget(controller: widget.controller),
               if (widget.controller.userServiceImpl.user.userRole.value >= UserRole.admin.value) ...[
                 TitleSubtitleRow(SettingTranslationConstants.runAnalyticsJobs.tr,
@@ -717,7 +726,7 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                   const SizedBox(width: 12),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.bondiBlue,
+                      backgroundColor: AppColor.getReleaseShelfColor(),
                       foregroundColor: Colors.white,
                       elevation: 0,
                     ),

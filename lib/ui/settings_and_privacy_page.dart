@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neom_commons/app_flavour.dart';
@@ -14,6 +14,7 @@ import 'package:neom_commons/utils/constants/translations/common_translation_con
 import 'package:neom_commons/utils/external_utilities.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/utils/app_gates.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/user_role.dart';
@@ -132,6 +133,28 @@ class SettingsPrivacyPage extends StatelessWidget {
                 );
               },
             ),
+            // ─── IaaS providers — Itzli admin debug entry ───
+            // Visible only when running Itzli in debug mode. Long-term plan:
+            // gate by UserRole.admin instead of kDebugMode. Routes to
+            // /iaasSettings (declared in neom_iaas — see USAGE.md).
+            if (kDebugMode && AppConfig.instance.appInUse == AppInUse.i)
+              TitleSubtitleRow(
+                'IaaS Providers',
+                subtitle: 'Cerebros en la nube',
+                navigateTo: '/iaasSettings',
+              ),
+            // ─── Saia IA Bench — admin-only dogfooding entry ───
+            // Gate: AppGates.canUseSaiaBench() (admin only for now — will
+            // open up to platinum+ once the UX is polished). Host apps
+            // register the SintPages for AppRouteConstants.saiaBench* by
+            // depending on neom_ia_bench and wiring SaiaBench*Page widgets
+            // in their own app_routes.dart (see Itzli for reference).
+            if (AppGates.canUseSaiaBench())
+              TitleSubtitleRow(
+                'IA Bench',
+                subtitle: 'Benchmarks MMLU · HellaSwag · ARC · GSM8K · Saia ES',
+                navigateTo: AppRouteConstants.saiaBench,
+              ),
             if(AppConfig.instance.appInUse != AppInUse.c) TitleSubtitleRow(SettingTranslationConstants.joinWhats.tr, subtitle: SettingTranslationConstants.joinWhatsSub.tr,
             onPressed: () {
               showModalBottomSheet(

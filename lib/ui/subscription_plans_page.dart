@@ -392,12 +392,22 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final price = plan.price;
+    final yearly = plan.priceYearly;
     final currencySymbol = price != null
         ? CoreUtilities.getCurrencySymbol(price.currency)
         : '\$';
     final amount = price?.amount ?? 0.0;
+    final yearlyAmount = yearly?.amount ?? 0.0;
     final currencyName = price?.currency.name.toUpperCase() ?? '';
     final planFeatures = _getPlanFeatures(plan.level);
+
+    // Monthly-equivalent of yearly (10-month narrative when annual = 10×monthly).
+    final yearlyMonths = (amount > 0 && yearlyAmount > 0)
+        ? (yearlyAmount / amount)
+        : 0.0;
+    final yearlySavePct = (amount > 0 && yearlyAmount > 0)
+        ? (1 - (yearlyAmount / (amount * 12))) * 100
+        : 0.0;
 
     return Container(
       decoration: BoxDecoration(
@@ -469,6 +479,56 @@ class _PlanCard extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                // Yearly row
+                if (yearlyAmount > 0) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$currencySymbol${yearlyAmount.toStringAsFixed(yearlyAmount == yearlyAmount.roundToDouble() ? 0 : 2)} / ${'year'.tr}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (yearlySavePct >= 1) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.4)),
+                          ),
+                          child: Text(
+                            yearlyMonths > 0 && (yearlyMonths - yearlyMonths.round()).abs() < 0.1
+                                ? '${yearlyMonths.round()} ${'months'.tr}'
+                                : '-${yearlySavePct.toStringAsFixed(0)}%',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.greenAccent,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+
+                // Founder seats remaining
+                if (plan.isFounderPlan) ...[
+                  const SizedBox(height: 10),
+                  _FounderSeatsBadge(
+                    remaining: plan.founderSeatsRemaining,
+                    total: plan.founderSeatsTotal,
+                    tierName: plan.founderTier,
+                  ),
+                ],
+
                 const SizedBox(height: 20),
 
                 if (planFeatures.isNotEmpty) ...[
@@ -501,18 +561,24 @@ class _PlanCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      subscriptionService.changeSubscriptionPlan(plan.id);
-                      await subscriptionService.paySubscription(plan, 'subscriptionPlans');
-                    },
+                    onPressed: (plan.isFounderPlan && plan.founderSeatsRemaining <= 0)
+                        ? null
+                        : _onSelect,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isRecommended ? AppColor.ceriseRed : AppColor.bondiBlue75,
+                      backgroundColor: plan.isFounderPlan
+                          ? Colors.amber.shade700
+                          : (isRecommended ? AppColor.ceriseRed : AppColor.bondiBlue75),
                       foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.white12,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Text(
-                      SettingTranslationConstants.selectPlan.tr,
+                      plan.isFounderPlan
+                          ? (plan.founderSeatsRemaining <= 0
+                              ? 'soldOut'.tr
+                              : 'becomeFounder'.tr)
+                          : SettingTranslationConstants.selectPlan.tr,
                       style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -523,6 +589,16 @@ class _PlanCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onSelect() async {
+    // Disable button if founder plan is sold out
+    if (plan.isFounderPlan && plan.founderSeatsRemaining <= 0) {
+      Sint.snackbar('soldOut'.tr, 'founderPlanSoldOut'.tr);
+      return;
+    }
+    subscriptionService.changeSubscriptionPlan(plan.id);
+    await subscriptionService.paySubscription(plan, 'subscriptionPlans');
   }
 
   List<String> _getPlanFeatures(SubscriptionLevel? level) {
@@ -537,5 +613,77 @@ class _PlanCard extends StatelessWidget {
       default:
         return [('${plan.name}Msg').tr];
     }
+  }
+}
+
+/// Visual badge showing "Quedan X de Y plazas fundador" with an amber theme.
+class _FounderSeatsBadge extends StatelessWidget {
+  final int remaining;
+  final int total;
+  final String tierName;
+
+  const _FounderSeatsBadge({
+    required this.remaining,
+    required this.total,
+    required this.tierName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final soldOut = remaining <= 0;
+    final ratio = total > 0 ? (remaining / total).clamp(0.0, 1.0) : 0.0;
+    final accent = soldOut ? Colors.redAccent : Colors.amber;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: accent.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                soldOut ? Icons.lock : Icons.diamond_outlined,
+                size: 16,
+                color: accent,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  soldOut
+                      ? 'founderSoldOut'.tr
+                      : 'founderSeatsRemaining'.trParams({
+                          'remaining': remaining.toString(),
+                          'total': total.toString(),
+                        }),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: accent,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (!soldOut && total > 0) ...[
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: ratio,
+                minHeight: 4,
+                backgroundColor: Colors.white12,
+                valueColor: AlwaysStoppedAnimation<Color>(accent),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
