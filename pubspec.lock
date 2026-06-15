@@ -878,14 +878,14 @@ packages:
       path: "../neom_commons"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.0.1"
   neom_core:
     dependency: "direct main"
     description:
       path: "../neom_core"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0"
   neom_google_places:
     dependency: transitive
     description:
@@ -1102,6 +1102,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
+  saia_core:
+    dependency: "direct main"
+    description:
+      path: "../../ai/saia_core"
+      relative: true
+    source: path
+    version: "1.0.1"
   sanitize_html:
     dependency: transitive
     description:

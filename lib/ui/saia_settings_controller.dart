@@ -138,6 +138,7 @@ class SaiaSettingsController extends SintController {
   }
 
   Future<void> toggleCapability(String key, bool value) async {
+    debugPrint('⚙️ [SaiaSettingsController] Toggling capability "$key" to: $value');
     switch (key) {
       case 'webSearchEnabled':
         webSearchEnabled.value = value;
@@ -153,8 +154,9 @@ class SaiaSettingsController extends SintController {
     try {
       final box = await Hive.openBox(hiveBoxName);
       await box.put(key, value);
-    } catch (_) {
-      // Silent persist failure.
+      debugPrint('⚙️ [SaiaSettingsController] Capability "$key" successfully persisted with value: $value');
+    } catch (e) {
+      debugPrint('⚙️ [SaiaSettingsController] Failed to persist capability "$key" to Hive: $e');
     }
   }
 

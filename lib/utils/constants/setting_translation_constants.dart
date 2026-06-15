@@ -1,5 +1,14 @@
 class SettingTranslationConstants {
 
+  // Customer support
+  static const String customerSupport = 'customerSupport';
+  static const String customerSupportDesc = 'customerSupportDesc';
+  static const String sendYourQuestion = 'sendYourQuestion';
+
+  // Customer portal (self-service)
+  static const String myAccountPortal = 'myAccountPortal';
+  static const String myAccountPortalDesc = 'myAccountPortalDesc';
+
   static const String language = 'language';
   static const String preferredLanguage = 'preferredLanguage';
   static const String safety = 'safety';

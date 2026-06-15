@@ -5,6 +5,7 @@ import 'package:neom_commons/ui/theme/app_color.dart';
 import 'package:neom_commons/ui/theme/app_theme.dart';
 import 'package:sint/sint.dart';
 import 'package:neom_commons/ui/widgets/header_widget.dart';
+import 'package:neom_commons/ui/widgets/subscription_status_banner.dart';
 import 'package:neom_commons/ui/widgets/title_subtitle_row.dart';
 import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/auth_guard.dart';
@@ -12,6 +13,7 @@ import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
 import 'package:neom_core/app_config.dart';
+import 'package:neom_core/data/firestore/inbox_firestore.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
 import 'package:neom_core/utils/enums/subscription_level.dart';
@@ -39,6 +41,17 @@ class AccountSettingsPage extends StatelessWidget {
         decoration: AppTheme.appBoxDecoration,
         child: ListView(
         children: <Widget>[
+          const SubscriptionStatusBanner(),
+          // Customer Portal — the client's self-service view (purchases, wallet,
+          // subscription, support) shared with the CRM customer profile.
+          TitleSubtitleRow(
+            SettingTranslationConstants.myAccountPortal.tr,
+            subtitle: SettingTranslationConstants.myAccountPortalDesc.tr,
+            onPressed: () => AuthGuard.protect(context,
+                () => Sint.toNamed(AppRouteConstants.customerProfile),
+                redirectRoute: AppRouteConstants.customerProfile),
+          ),
+          const Divider(height: 0),
           HeaderWidget(SettingTranslationConstants.loginAndSecurity.tr),
           TitleSubtitleRow(
             AppTranslationConstants.username.tr,
@@ -65,6 +78,18 @@ class AccountSettingsPage extends StatelessWidget {
           TitleSubtitleRow(
             AppTranslationConstants.email.tr,
             subtitle: controller.user.email,
+          ),
+          const Divider(height: 0),
+          // ── Customer support → opens the user's support inbox thread ──
+          TitleSubtitleRow(
+            SettingTranslationConstants.customerSupport.tr,
+            subtitle: SettingTranslationConstants.sendYourQuestion.tr,
+            onPressed: () => AuthGuard.protect(context, () async {
+              final pid = controller.userServiceImpl.profile.id;
+              if (pid.isEmpty) return;
+              final inbox = await InboxFirestore().getOrCreateSupportRoom(pid);
+              Sint.toNamed(AppRouteConstants.inboxRoom, arguments: [inbox]);
+            }),
           ),
           const Divider(height: 0),
           if(controller.userServiceImpl.userSubscription?.status == SubscriptionStatus.active)

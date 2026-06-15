@@ -1,3 +1,14 @@
+# Changelog - neom_settings
+
+## Unreleased - System updates
+- Actualizaciones de estabilidad y compatibilidad.
+
+## Unreleased - Settings support opens the chat directly
+- Tapping **"Atención y Soporte"** in Settings now opens the support inbox thread **directly** (no intermediate "Enviar mi pregunta" section/click). Removed the now-unused support section.
+
+## Unreleased - "Atención al Cliente" entry in Settings
+- Added a **Customer Support** option in Settings (web nav section + mobile account row). Tapping **"Enviar mi pregunta"** opens (or creates) the user's support inbox thread (`InboxFirestore.getOrCreateAppBotRoom`) and navigates to it, so they send their question directly — and the thread also appears in their regular Inbox for follow-up. New translations `customerSupport` / `customerSupportDesc` / `sendYourQuestion` (ES/EN/FR/DE).
+
 ### 1.2.0 - Vector Index Admin Job & Code Quality
 
 This release introduces admin tools for AI-powered content indexing and code quality improvements.

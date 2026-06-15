@@ -11,9 +11,9 @@ import 'package:neom_commons/ui/widgets/web_content_wrapper.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
-import 'package:neom_commons/utils/external_utilities.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
+import 'package:neom_core/data/firestore/inbox_firestore.dart';
 import 'package:neom_core/utils/app_gates.dart';
 import 'package:neom_core/utils/constants/app_route_constants.dart';
 import 'package:neom_core/utils/enums/app_in_use.dart';
@@ -95,15 +95,19 @@ class SettingsPrivacyPage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(FontAwesomeIcons.whatsapp,),
+                                  icon: const Icon(Icons.support_agent,),
                                   iconSize: 40,
-                                  tooltip: SettingTranslationConstants.whatsContact.tr,
-                                  onPressed: () {
+                                  tooltip: SettingTranslationConstants.customerSupport.tr,
+                                  onPressed: () async {
                                     Sint.back();
-                                    ExternalUtilities.launchWhatsappURL(AppProperties.getWhatsappBusinessNumber(), AppTranslationConstants.hello.tr);
+                                    final pid = controller.userServiceImpl.profile.id;
+                                    if (pid.isNotEmpty) {
+                                      final inbox = await InboxFirestore().getOrCreateSupportRoom(pid);
+                                      Sint.toNamed(AppRouteConstants.inboxRoom, arguments: [inbox]);
+                                    }
                                   },
                                 ),
-                                Text(SettingTranslationConstants.whatsapp.tr,),
+                                Text(SettingTranslationConstants.customerSupport.tr,),
                               ],
                             ),
                             Column(

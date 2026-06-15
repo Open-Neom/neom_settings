@@ -42,7 +42,7 @@ class SaiaConnectorSection {
 /// Agnostic connectors settings page.
 ///
 /// Renders a list of [SaiaConnectorSection]s the host declares — Itzli
-/// passes its specific connectors (RC daemon, Firestore, TTS, Cloud
+/// passes its specific connectors (RC daemon, Firestore, Cloud
 /// Drive, custom APIs); EMXI / Gigmeout / Cyberneom can do the same with
 /// their own connector lists.
 ///

@@ -3,6 +3,11 @@ import '../../utils/constants/setting_translation_constants.dart';
 class SettingFrTranslations {
 
   static const Map<String, String> values = {
+    SettingTranslationConstants.customerSupport: 'Service Client',
+    SettingTranslationConstants.customerSupportDesc: 'Écris ta question et nous t\'aiderons ici. La conversation reste dans ta boîte de réception pour le suivi.',
+    SettingTranslationConstants.myAccountPortal: 'Mon compte',
+    SettingTranslationConstants.myAccountPortalDesc: 'Achats, portefeuille, abonnement et support',
+    SettingTranslationConstants.sendYourQuestion: 'Envoyer ma question',
     SettingTranslationConstants.account: 'Compte',
     SettingTranslationConstants.accountSettings: 'Paramètres du compte',
     SettingTranslationConstants.activateSubscription: 'Activer l\'abonnement',

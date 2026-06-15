@@ -14,7 +14,7 @@ import 'package:neom_commons/utils/constants/app_locale_constants.dart';
 import 'package:neom_commons/utils/constants/app_page_id_constants.dart';
 import 'package:neom_commons/utils/constants/translations/app_translation_constants.dart';
 import 'package:neom_commons/utils/constants/translations/common_translation_constants.dart';
-import 'package:neom_commons/utils/external_utilities.dart';
+import 'package:neom_commons/utils/user_role_label.dart';
 import 'package:neom_core/app_config.dart';
 import 'package:neom_core/app_properties.dart';
 import 'package:neom_core/utils/app_gates.dart';
@@ -29,6 +29,7 @@ import 'package:neom_core/utils/enums/user_role.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:sint/sint.dart';
 import 'package:intl/intl.dart';
+import 'package:neom_core/data/firestore/inbox_firestore.dart';
 import 'package:neom_core/data/firestore/subscription_event_firestore.dart';
 import 'package:neom_core/domain/model/subscription_event.dart';
 import 'package:neom_core/domain/use_cases/stripe_api_service.dart';
@@ -66,6 +67,7 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
       SettingsNavItem(icon: Icons.receipt_long_outlined, label: SettingTranslationConstants.billing.tr, key: 'billing'),
     SettingsNavItem(icon: Icons.tune, label: SettingTranslationConstants.preferences.tr, key: 'content'),
     SettingsNavItem(icon: Icons.info_outline, label: CommonTranslationConstants.aboutApp.tr, key: 'about'),
+    SettingsNavItem(icon: Icons.support_agent, label: SettingTranslationConstants.customerSupport.tr, key: 'support'),
     SettingsNavItem(icon: Icons.mail_outline, label: AppTranslationConstants.contactUs.tr, key: 'contact'),
     if (widget.controller.userServiceImpl.user.userRole != UserRole.subscriber)
       SettingsNavItem(icon: Icons.admin_panel_settings_outlined, label: SettingTranslationConstants.adminCenter.tr, key: 'admin'),
@@ -225,7 +227,15 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                                 SettingsWebNav(
                                   items: _navItems,
                                   activeKey: _activeSection,
-                                  onItemTap: (key) => setState(() => _activeSection = key),
+                                  onItemTap: (key) {
+                                    // Support opens the inbox thread directly —
+                                    // no intermediate section/click.
+                                    if (key == 'support') {
+                                      _openSupportRoom();
+                                      return;
+                                    }
+                                    setState(() => _activeSection = key);
+                                  },
                                 ),
                               ],
                             ),
@@ -251,6 +261,20 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
       ),
       ),
     );
+  }
+
+  /// Opens (or creates) the user's customer-support inbox thread and navigates
+  /// to it, so they can send their question directly. It also shows up in their
+  /// regular Inbox among other conversations.
+  Future<void> _openSupportRoom() async {
+    try {
+      final pid = widget.controller.userServiceImpl.profile.id;
+      if (pid.isEmpty) return;
+      final inbox = await InboxFirestore().getOrCreateSupportRoom(pid);
+      Sint.toNamed(AppRouteConstants.inboxRoom, arguments: [inbox]);
+    } catch (e, st) {
+      NeomErrorLogger.recordError(e, st, module: 'neom_settings', operation: '_openSupportRoom');
+    }
   }
 
   Widget _buildSection() {
@@ -481,6 +505,13 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
           title: AppTranslationConstants.contactUs.tr,
           content: Column(
             children: [
+              // Official support channel → opens the in-app/web support room.
+              // Replaces WhatsApp as the way users reach us.
+              _buildContactRow(
+                Icons.support_agent,
+                SettingTranslationConstants.customerSupport.tr,
+                () => _openSupportRoom(),
+              ),
               _buildContactRow(
                 Icons.email_outlined,
                 SettingTranslationConstants.gmail.tr,
@@ -490,14 +521,6 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                   launchUrl(Uri.parse('mailto:$email?subject=$subject'),
                     mode: LaunchMode.externalApplication);
                 },
-              ),
-              _buildContactRow(
-                Icons.chat_bubble_outline,
-                'WhatsApp',
-                () => ExternalUtilities.launchWhatsappURL(
-                  AppProperties.getWhatsappBusinessNumber(),
-                  AppTranslationConstants.hello.tr,
-                ),
               ),
               _buildContactRow(
                 Icons.camera_alt_outlined,
@@ -616,7 +639,9 @@ class _SettingsWebPageState extends State<SettingsWebPage> {
                       Text(
                         hasSubscription
                             ? planDisplayName.tr
-                            : CommonTranslationConstants.freeAccount.tr,
+                            : (widget.controller.userServiceImpl.user.userRole.isStaff
+                                ? widget.controller.userServiceImpl.user.userRole.label
+                                : CommonTranslationConstants.freeAccount.tr),
                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       if (hasSubscription && (userSub!.price?.amount ?? 0) > 0)
