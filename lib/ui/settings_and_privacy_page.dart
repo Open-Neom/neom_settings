@@ -73,7 +73,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(FontAwesomeIcons.envelope,),
+                                  icon: Icon(FontAwesomeIcons.envelope.data,),
                                   iconSize: 40,
                                   tooltip: SettingTranslationConstants.gmail.tr,
                                   onPressed: () {
@@ -114,7 +114,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(FontAwesomeIcons.instagram,),
+                                  icon: Icon(FontAwesomeIcons.instagram.data,),
                                   iconSize: 40,
                                   tooltip: AppTranslationConstants.instagram.tr,
                                   onPressed: () {
@@ -177,7 +177,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(FontAwesomeIcons.whatsapp,),
+                                    icon: Icon(FontAwesomeIcons.whatsapp.data,),
                                     iconSize: 40,
                                     tooltip: SettingTranslationConstants.whatsCommunity.tr,
                                     onPressed: () {
@@ -197,7 +197,7 @@ class SettingsPrivacyPage extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(FontAwesomeIcons.whatsapp,),
+                                    icon: Icon(FontAwesomeIcons.whatsapp.data,),
                                     iconSize: 40,
                                     tooltip: SettingTranslationConstants.whatsCommunity.tr,
                                     onPressed: () {
