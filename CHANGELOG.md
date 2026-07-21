@@ -1,3 +1,6 @@
+
+## [2.0.0-unreleased] - 2026-07-21
+- Refactor and compatibility updates for setting_de_translations.dart, setting_fr_translations.dart.
 # Changelog - neom_settings
 
 ## Unreleased - System updates
