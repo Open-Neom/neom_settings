@@ -3,6 +3,10 @@
 - Refactor and compatibility updates for setting_de_translations.dart, setting_fr_translations.dart.
 # Changelog - neom_settings
 
+## [1.1.0] - 2026-07-09
+- Update settings and privacy settings widgets.
+
+
 ## Unreleased - System updates
 - Actualizaciones de estabilidad y compatibilidad.
 
