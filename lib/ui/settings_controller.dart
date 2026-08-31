@@ -32,8 +32,10 @@ class SettingsController extends SintController implements SettingsService {
   
   final loginServiceImpl = Sint.find<LoginService>();
   final userServiceImpl = Sint.find<UserService>();
-  final analyticsRepositoryImpl = Sint.find<AnalyticsRepository>();
-  final jobsRepositoryImpl = Sint.find<JobRepository>();
+  AnalyticsRepository? get analyticsRepositoryImpl =>
+      Sint.isRegistered<AnalyticsRepository>() ? Sint.find<AnalyticsRepository>() : null;
+  JobRepository? get jobsRepositoryImpl =>
+      Sint.isRegistered<JobRepository>() ? Sint.find<JobRepository>() : null;
 
   final RxBool isLoading = true.obs;
   final RxString newLanguage = "".obs;
@@ -86,7 +88,7 @@ class SettingsController extends SintController implements SettingsService {
     isLoading.value = true;
 
     try {
-      await analyticsRepositoryImpl.setUserLocations();
+      await analyticsRepositoryImpl?.setUserLocations();
     } catch(e) {
       AppConfig.logger.e(e.toString());
     }
@@ -102,7 +104,7 @@ class SettingsController extends SintController implements SettingsService {
     update([AppPageIdConstants.settingsPrivacy]);
 
     try {
-      await jobsRepositoryImpl.createProfileInstrumentsCollection();
+      await jobsRepositoryImpl?.createProfileInstrumentsCollection();
     } catch(e) {
       AppConfig.logger.e(e.toString());
     }
